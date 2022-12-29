@@ -43,11 +43,11 @@ class QC500UniverseSelectionModel(FundamentalUniverseSelectionModel):
 
         # If no security has met the QC500 criteria, the universe is unchanged.
         # A new selection will be attempted on the next trading day as self.lastMonth is not updated
-        if len(self.dollarVolumeBySymbol) == 0:
-            return Universe.Unchanged
-
-        # return the symbol objects our sorted collection
-        return list(self.dollarVolumeBySymbol.keys())
+        return (
+            list(self.dollarVolumeBySymbol.keys())
+            if self.dollarVolumeBySymbol
+            else Universe.Unchanged
+        )
 
     def SelectFine(self, algorithm, fine):
         '''Performs fine selection for the QC500 constituents

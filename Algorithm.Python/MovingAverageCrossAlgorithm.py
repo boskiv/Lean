@@ -63,11 +63,11 @@ class MovingAverageCrossAlgorithm(QCAlgorithm):
         holdings = self.Portfolio["SPY"].Quantity
 
         # we only want to go long if we're currently short or flat
-        if holdings <= 0:
-            # if the fast is greater than the slow, we'll go long
-            if self.fast.Current.Value > self.slow.Current.Value *(1 + tolerance):
-                self.Log("BUY  >> {0}".format(self.Securities["SPY"].Price))
-                self.SetHoldings("SPY", 1.0)
+        if holdings <= 0 and self.fast.Current.Value > self.slow.Current.Value * (
+            1 + tolerance
+        ):
+            self.Log("BUY  >> {0}".format(self.Securities["SPY"].Price))
+            self.SetHoldings("SPY", 1.0)
 
         # we only want to liquidate if we're currently long
         # if the fast is less than the slow we'll liquidate our long

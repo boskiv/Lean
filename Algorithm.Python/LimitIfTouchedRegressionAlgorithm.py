@@ -33,26 +33,27 @@ class LimitIfTouchedRegressionAlgorithm(QCAlgorithm):
         self.AddEquity("SPY")
 
     def OnData(self, data):
-        if data.ContainsKey("SPY"):
-            if len(self.Transactions.GetOpenOrders()) == 0:
-                self._negative = 1 if self.Time.day < 9 else -1
-                orderRequest = SubmitOrderRequest(OrderType.LimitIfTouched, SecurityType.Equity, "SPY",
-                                                  self._negative * 10, 0,
-                                                  data["SPY"].Price - self._negative,
-                                                  data["SPY"].Price - 0.25 * self._negative, self.UtcTime,
-                                                  f"LIT - Quantity: {self._negative * 10}")
-                self._request = self.Transactions.AddOrder(orderRequest)
+        if not data.ContainsKey("SPY"):
+            return
+        if len(self.Transactions.GetOpenOrders()) == 0:
+            self._negative = 1 if self.Time.day < 9 else -1
+            orderRequest = SubmitOrderRequest(OrderType.LimitIfTouched, SecurityType.Equity, "SPY",
+                                              self._negative * 10, 0,
+                                              data["SPY"].Price - self._negative,
+                                              data["SPY"].Price - 0.25 * self._negative, self.UtcTime,
+                                              f"LIT - Quantity: {self._negative * 10}")
+            self._request = self.Transactions.AddOrder(orderRequest)
+            return
+
+        if self._request is not None:
+            if self._request.Quantity == 1:
+                self.Transactions.CancelOpenOrders()
+                self._request = None
                 return
 
-            if self._request is not None:
-                if self._request.Quantity == 1:
-                    self.Transactions.CancelOpenOrders()
-                    self._request = None
-                    return
-
-                new_quantity = int(self._request.Quantity - self._negative)
-                self._request.UpdateQuantity(new_quantity, f"LIT - Quantity: {new_quantity}")     
-                self._request.UpdateTriggerPrice(Extensions.RoundToSignificantDigits(self._request.Get(OrderField.TriggerPrice), 5));
+            new_quantity = int(self._request.Quantity - self._negative)
+            self._request.UpdateQuantity(new_quantity, f"LIT - Quantity: {new_quantity}")     
+            self._request.UpdateTriggerPrice(Extensions.RoundToSignificantDigits(self._request.Get(OrderField.TriggerPrice), 5));
 
     def OnOrderEvent(self, orderEvent):
         if orderEvent.Status == OrderStatus.Filled:

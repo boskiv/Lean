@@ -39,12 +39,14 @@ class OptionRenameRegressionAlgorithm(QCAlgorithm):
             for kvp in slice.OptionChains:
                 chain = kvp.Value
                 if self.Time.day == 28 and self.Time.hour > 9 and self.Time.minute > 0:
-    
-                    contracts = [i for i in sorted(chain, key=lambda x:x.Expiry) 
-                                         if i.Right ==  OptionRight.Call and 
-                                            i.Strike == 33 and
-                                            i.Expiry.date() == datetime(2013,8,17).date()]
-                    if contracts:
+
+                    if contracts := [
+                        i
+                        for i in sorted(chain, key=lambda x: x.Expiry)
+                        if i.Right == OptionRight.Call
+                        and i.Strike == 33
+                        and i.Expiry.date() == datetime(2013, 8, 17).date()
+                    ]:
                         # Buying option
                         contract = contracts[0]
                         self.Buy(contract.Symbol, 1)
@@ -64,7 +66,7 @@ class OptionRenameRegressionAlgorithm(QCAlgorithm):
                                            i.Expiry.date() == datetime(2013,8,17).date()]
             if contracts:
                 contract = contracts[0]
-                self.Log("Bid Price" + str(contract.BidPrice))
+                self.Log(f"Bid Price{str(contract.BidPrice)}")
                 if float(contract.BidPrice) != 0.05:
                     raise ValueError("Regression test failed: current bid price was not loaded from FOXA file and is not $0.05")
 

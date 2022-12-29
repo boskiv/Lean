@@ -45,10 +45,10 @@ class BrokerageModelAlgorithm(QCAlgorithm):
             self.SetHoldings("SPY", self.last)
             if self.Portfolio["SPY"].Quantity == 0:
                 # each time we fail to purchase we'll decrease our set holdings percentage
-                self.Debug(str(self.Time) + " - Failed to purchase stock")
+                self.Debug(f"{str(self.Time)} - Failed to purchase stock")
                 self.last *= 0.95
             else:
-                self.Debug("{} - Purchased Stock @ SetHoldings( {} )".format(self.Time, self.last))
+                self.Debug(f"{self.Time} - Purchased Stock @ SetHoldings( {self.last} )")
 
 
 class MinimumAccountBalanceBrokerageModel(DefaultBrokerageModel):

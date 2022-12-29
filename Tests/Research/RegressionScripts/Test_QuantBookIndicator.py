@@ -28,7 +28,7 @@ class IndicatorTest():
         self.symbol = self.qb.AddSecurity(security_type, symbol).Symbol
 
     def __str__(self):
-        return "{} on {}".format(self.symbol.ID, self.qb.StartDate)
+        return f"{self.symbol.ID} on {self.qb.StartDate}"
 
     def test_bollinger_bands(self, symbol, start, end, resolution):
         ind = BollingerBands(10, 2)

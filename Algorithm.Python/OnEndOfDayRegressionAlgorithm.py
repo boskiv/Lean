@@ -56,16 +56,21 @@ class OnEndOfDayRegressionAlgorithm(QCAlgorithm):
         if symbol == self._ibmSymbol:
             self._onEndOfDayIbmCallCount += 1
 
-        self.Log("OnEndOfDay() called: " + str(self.UtcTime)
-                + ". SPY count " + str(self._onEndOfDaySpyCallCount)
-                + ". BAC count " + str(self._onEndOfDayBacCallCount)
-                + ". IBM count " + str(self._onEndOfDayIbmCallCount))
+        self.Log(
+            f"OnEndOfDay() called: {str(self.UtcTime)}. SPY count {str(self._onEndOfDaySpyCallCount)}. BAC count {str(self._onEndOfDayBacCallCount)}. IBM count {str(self._onEndOfDayIbmCallCount)}"
+        )
 
     def OnEndOfAlgorithm(self):
         '''Assert expected behavior'''
         if self._onEndOfDaySpyCallCount != 5:
-            raise ValueError("OnEndOfDay(SPY) unexpected count call " + str(self._onEndOfDaySpyCallCount))
+            raise ValueError(
+                f"OnEndOfDay(SPY) unexpected count call {str(self._onEndOfDaySpyCallCount)}"
+            )
         if self._onEndOfDayBacCallCount != 4:
-            raise ValueError("OnEndOfDay(BAC) unexpected count call " + str(self._onEndOfDayBacCallCount))
+            raise ValueError(
+                f"OnEndOfDay(BAC) unexpected count call {str(self._onEndOfDayBacCallCount)}"
+            )
         if self._onEndOfDayIbmCallCount != 1:
-            raise ValueError("OnEndOfDay(IBM) unexpected count call " + str(self._onEndOfDayIbmCallCount))
+            raise ValueError(
+                f"OnEndOfDay(IBM) unexpected count call {str(self._onEndOfDayIbmCallCount)}"
+            )

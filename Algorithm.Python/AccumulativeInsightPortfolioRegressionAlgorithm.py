@@ -40,4 +40,6 @@ class AccumulativeInsightPortfolioRegressionAlgorithm(QCAlgorithm):
         # holdings value should be 0.03 - to avoid price fluctuation issue we compare with 0.06 and 0.01
         if (self.Portfolio.TotalHoldingsValue > self.Portfolio.TotalPortfolioValue * 0.06
             or self.Portfolio.TotalHoldingsValue < self.Portfolio.TotalPortfolioValue * 0.01):
-            raise ValueError("Unexpected Total Holdings Value: " + str(self.Portfolio.TotalHoldingsValue))
+            raise ValueError(
+                f"Unexpected Total Holdings Value: {str(self.Portfolio.TotalHoldingsValue)}"
+            )

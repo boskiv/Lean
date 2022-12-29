@@ -37,9 +37,7 @@ class FilteredIdentityAlgorithm(QCAlgorithm):
     def Filter(self, data):
         '''Filter function: True if data is not an instance of Tick. If it is, true if TickType is Trade
         data -- Data for applying the filter'''
-        if isinstance(data, Tick):
-            return data.TickType == TickType.Trade
-        return True
+        return data.TickType == TickType.Trade if isinstance(data, Tick) else True
         
     def OnData(self, data):
         # Since we are only accepting TickType.Trade,

@@ -34,15 +34,15 @@ class UncorrelatedUniverseSelectionModel(FundamentalUniverseSelectionModel):
             threshold: Threadhold for the minimum mean correlation between security and benchmark'''
         super().__init__(False)
 
-        self.benchmark = benchmark 
+        self.benchmark = benchmark
         self.numberOfSymbolsCoarse = numberOfSymbolsCoarse
         self.numberOfSymbols = numberOfSymbols
         self.windowLength = windowLength
         self.historyLength = historyLength
         self.threshold = threshold
 
-        self.cache = dict()
-        self.symbol = list()
+        self.cache = {}
+        self.symbol = []
 
     def SelectCoarse(self, algorithm, coarse):
         '''Select stocks with highest Z-Score with fundamental data and positive previous-day price and volume'''
@@ -57,8 +57,8 @@ class UncorrelatedUniverseSelectionModel(FundamentalUniverseSelectionModel):
                                           and x.Volume * x.Price > 0 
                                           and x.Symbol != self.benchmark],
                         key = lambda x: x.DollarVolume, reverse=True)[:self.numberOfSymbolsCoarse]
-        
-        newSymbols = list()
+
+        newSymbols = []
         for cf in coarse + [benchmark]:
             symbol = cf.Symbol
             data = self.cache.setdefault(symbol, self.SymbolData(self, symbol))
@@ -75,7 +75,7 @@ class UncorrelatedUniverseSelectionModel(FundamentalUniverseSelectionModel):
                     self.cache[symbol].Warmup(history)
 
         # Create a new dictionary with the zScore
-        zScore = dict()
+        zScore = {}
         benchmark = self.cache[self.benchmark].GetReturns()
         for cf in coarse:
             symbol = cf.Symbol

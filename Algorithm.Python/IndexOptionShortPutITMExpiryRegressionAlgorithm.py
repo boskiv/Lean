@@ -36,10 +36,10 @@ class IndexOptionShortCallITMExpiryRegressionAlgorithm(QCAlgorithm):
         self.spxOption = [i for i in self.spxOption if i.ID.StrikePrice <= 4200 and i.ID.OptionRight == OptionRight.Put and i.ID.Date.year == 2021 and i.ID.Date.month == 1]
         self.spxOption = list(sorted(self.spxOption, key=lambda x: x.ID.StrikePrice, reverse=True))[0]
         self.spxOption = self.AddIndexOptionContract(self.spxOption, Resolution.Minute).Symbol
-        
+
         self.expectedContract = Symbol.CreateOption(self.spx, Market.USA, OptionStyle.European, OptionRight.Put, 4200, datetime(2021, 1, 15))
         if self.spxOption != self.expectedContract:
-            raise Exception(f"Contract self.expectedContract was not found in the chain")
+            raise Exception("Contract self.expectedContract was not found in the chain")
 
         self.Schedule.On(self.DateRules.Tomorrow, self.TimeRules.AfterMarketOpen(self.spx, 1), lambda: self.MarketOrder(self.spxOption, -1))
 
@@ -47,13 +47,17 @@ class IndexOptionShortCallITMExpiryRegressionAlgorithm(QCAlgorithm):
         # Assert delistings, so that we can make sure that we receive the delisting warnings at
         # the expected time. These assertions detect bug #4872
         for delisting in data.Delistings.Values:
-            if delisting.Type == DelistingType.Warning:
-                if delisting.Time != datetime(2021, 1, 15):
-                    raise Exception(f"Delisting warning issued at unexpected date: {delisting.Time}")
-                
-            if delisting.Type == DelistingType.Delisted:
-                if delisting.Time != datetime(2021, 1, 16):
-                    raise Exception(f"Delisting happened at unexpected date: {delisting.Time}")
+            if (
+                delisting.Type == DelistingType.Warning
+                and delisting.Time != datetime(2021, 1, 15)
+            ):
+                raise Exception(f"Delisting warning issued at unexpected date: {delisting.Time}")
+
+            if (
+                delisting.Type == DelistingType.Delisted
+                and delisting.Time != datetime(2021, 1, 16)
+            ):
+                raise Exception(f"Delisting happened at unexpected date: {delisting.Time}")
                 
             
         

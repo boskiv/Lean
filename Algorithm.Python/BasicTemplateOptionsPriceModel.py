@@ -60,5 +60,5 @@ class BasicTemplateOptionsPriceModel(QCAlgorithm):
             return
 
         chain = slice.OptionChains[self.optionSymbol]
-        if not any([x for x in chain if x.Greeks.Delta != 0]):
-            self.Log(f'No contract with Delta != 0')
+        if not any(x for x in chain if x.Greeks.Delta != 0):
+            self.Log('No contract with Delta != 0')

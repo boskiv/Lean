@@ -43,47 +43,42 @@ class ConstituentsUniverseRegressionAlgorithm(QCAlgorithm):
         self._step = self._step + 1
         if self._step == 1:
             if not data.ContainsKey(self._qqq) or not data.ContainsKey(self._appl):
-                raise ValueError("Unexpected symbols found, step: " + str(self._step))
+                raise ValueError(f"Unexpected symbols found, step: {str(self._step)}")
             if data.Count != 2:
-                raise ValueError("Unexpected data count, step: " + str(self._step))
+                raise ValueError(f"Unexpected data count, step: {str(self._step)}")
             # AAPL will be deselected by the ConstituentsUniverse
             # but it shouldn't be removed since we hold it
             self.SetHoldings(self._appl, 0.5)
         elif self._step == 2:
             if not data.ContainsKey(self._appl):
-                raise ValueError("Unexpected symbols found, step: " + str(self._step))
+                raise ValueError(f"Unexpected symbols found, step: {str(self._step)}")
             if data.Count != 1:
-                raise ValueError("Unexpected data count, step: " + str(self._step))
+                raise ValueError(f"Unexpected data count, step: {str(self._step)}")
             # AAPL should now be released
             # note: takes one extra loop because the order is executed on market open
             self.Liquidate()
         elif self._step == 3:
             if not data.ContainsKey(self._fb) or not data.ContainsKey(self._spy) or not data.ContainsKey(self._appl):
-                raise ValueError("Unexpected symbols found, step: " + str(self._step))
+                raise ValueError(f"Unexpected symbols found, step: {str(self._step)}")
             if data.Count != 3:
-                raise ValueError("Unexpected data count, step: " + str(self._step))
-        elif self._step == 4:
+                raise ValueError(f"Unexpected data count, step: {str(self._step)}")
+        elif self._step in [4, 5]:
             if not data.ContainsKey(self._fb) or not data.ContainsKey(self._spy):
-                raise ValueError("Unexpected symbols found, step: " + str(self._step))
+                raise ValueError(f"Unexpected symbols found, step: {str(self._step)}")
             if data.Count != 2:
-                raise ValueError("Unexpected data count, step: " + str(self._step))
-        elif self._step == 5:
-            if not data.ContainsKey(self._fb) or not data.ContainsKey(self._spy):
-                raise ValueError("Unexpected symbols found, step: " + str(self._step))
-            if data.Count != 2:
-                raise ValueError("Unexpected data count, step: " + str(self._step))
+                raise ValueError(f"Unexpected data count, step: {str(self._step)}")
 
     def OnEndOfAlgorithm(self):
         if self._step != 5:
-            raise ValueError("Unexpected step count: " + str(self._step))
+            raise ValueError(f"Unexpected step count: {str(self._step)}")
 
-    def  OnSecuritiesChanged(self, changes):
+    def OnSecuritiesChanged(self, changes):
         for added in changes.AddedSecurities:
-            self.Log("AddedSecurities " + str(added))
+            self.Log(f"AddedSecurities {str(added)}")
 
         for removed in changes.RemovedSecurities:
-            self.Log("RemovedSecurities " + str(removed) + str(self._step))
+            self.Log(f"RemovedSecurities {str(removed)}{str(self._step)}")
             # we are currently notifying the removal of AAPl twice,
             # when deselected and when finally removed (since it stayed pending)
             if removed.Symbol == self._appl and self._step != 1 and self._step != 2 or removed.Symbol == self._qqq and self._step != 1:
-                raise ValueError("Unexpected removal step count: " + str(self._step))
+                raise ValueError(f"Unexpected removal step count: {str(self._step)}")

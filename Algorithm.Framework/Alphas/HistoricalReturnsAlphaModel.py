@@ -21,8 +21,8 @@ class HistoricalReturnsAlphaModel(AlphaModel):
         Args:
             lookback(int): Historical return lookback period
             resolution: The resolution of historical data'''
-        self.lookback = kwargs['lookback'] if 'lookback' in kwargs else 1
-        self.resolution = kwargs['resolution'] if 'resolution' in kwargs else Resolution.Daily
+        self.lookback = kwargs.get('lookback', 1)
+        self.resolution = kwargs.get('resolution', Resolution.Daily)
         self.predictionInterval = Time.Multiply(Extensions.ToTimeSpan(self.resolution), self.lookback)
         self.symbolDataBySymbol = {}
 
@@ -80,7 +80,7 @@ class SymbolData:
     '''Contains data specific to a symbol required by this model'''
     def __init__(self, symbol, lookback):
         self.Symbol = symbol
-        self.ROC = RateOfChange('{}.ROC({})'.format(symbol, lookback), lookback)
+        self.ROC = RateOfChange(f'{symbol}.ROC({lookback})', lookback)
         self.Consolidator = None
         self.previous = 0
 

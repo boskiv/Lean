@@ -39,11 +39,11 @@ class DividendAlgorithm(QCAlgorithm):
 
     def OnData(self, data):
         '''OnData event is the primary entry point for your algorithm. Each new data point will be pumped in here.'''
-        bar = data["MSFT"]
         if self.Transactions.OrdersCount == 0:
             self.SetHoldings("MSFT", .5)
             # place some orders that won't fill, when the split comes in they'll get modified to reflect the split
             quantity = self.CalculateOrderQuantity("MSFT", .25)
+            bar = data["MSFT"]
             self.Debug(f"Purchased Stock: {bar.Price}")
             self.StopMarketOrder("MSFT", -quantity, bar.Low/2)
             self.LimitOrder("MSFT", -quantity, bar.High*2)

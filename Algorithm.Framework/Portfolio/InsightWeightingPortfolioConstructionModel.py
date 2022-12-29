@@ -47,16 +47,19 @@ class InsightWeightingPortfolioConstructionModel(EqualWeightingPortfolioConstruc
         '''Will determine the target percent for each insight
         Args:
             activeInsights: The active insights to generate a target for'''
-        result = {}
-
         # We will adjust weights proportionally in case the sum is > 1 so it sums to 1.
         weightSums = sum(self.GetValue(insight) for insight in activeInsights if self.RespectPortfolioBias(insight))
-        weightFactor = 1.0
-        if weightSums > 1:
-            weightFactor = 1 / weightSums
-        for insight in activeInsights:
-            result[insight] = (insight.Direction if self.RespectPortfolioBias(insight) else InsightDirection.Flat) * self.GetValue(insight) * weightFactor
-        return result
+        weightFactor = 1 / weightSums if weightSums > 1 else 1.0
+        return {
+            insight: (
+                insight.Direction
+                if self.RespectPortfolioBias(insight)
+                else InsightDirection.Flat
+            )
+            * self.GetValue(insight)
+            * weightFactor
+            for insight in activeInsights
+        }
 
     def GetValue(self, insight):
         '''Method that will determine which member will be used to compute the weights and gets its value

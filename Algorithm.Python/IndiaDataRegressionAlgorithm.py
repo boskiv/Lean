@@ -27,14 +27,14 @@ class IndiaDataRegressionAlgorithm(QCAlgorithm):
         
         self.SetAccountCurrency("INR")
         self.SetStartDate(2004, 5, 20)
-        self.SetEndDate(2016, 7, 26) 
+        self.SetEndDate(2016, 7, 26)
         self._mappingSymbol = self.AddEquity("3MINDIA", Resolution.Daily, Market.India).Symbol
         self._splitAndDividendSymbol = self.AddEquity("CCCL", Resolution.Daily, Market.India).Symbol
         self._receivedWarningEvent = False
         self._receivedOccurredEvent = False
         self._initialMapping = False
         self._executionMapping = False
-        self.Debug("numpy test >>> print numpy.pi: " + str(np.pi))
+        self.Debug(f"numpy test >>> print numpy.pi: {str(np.pi)}")
 
     def OnData(self, data):
         '''OnData event is the primary entry point for your algorithm. Each new data point will be pumped in here.

@@ -40,8 +40,10 @@ class AddFutureOptionContractDataStreamingRegressionAlgorithm(QCAlgorithm):
         optionChains = self.OptionChainProvider.GetOptionContractList(self.es20h20, self.Time + timedelta(days=1))
         optionChains += self.OptionChainProvider.GetOptionContractList(self.es19m20, self.Time + timedelta(days=1))
 
-        for optionContract in optionChains:
-            self.expectedSymbolsReceived.append(self.AddFutureOptionContract(optionContract, Resolution.Minute).Symbol)
+        self.expectedSymbolsReceived.extend(
+            self.AddFutureOptionContract(optionContract, Resolution.Minute).Symbol
+            for optionContract in optionChains
+        )
 
     def OnData(self, data: Slice):
         if not data.HasData:

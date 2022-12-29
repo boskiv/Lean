@@ -50,7 +50,7 @@ class PearsonCorrelationPairsTradingAlphaModel(BasePairsTradingAlphaModel):
                 self.Securities.remove(security)
 
         symbols = [ x.Symbol for x in self.Securities ]
-        
+
         history = algorithm.History(symbols, self.lookback, self.resolution).close.unstack(level=0)
 
         if not history.empty:
@@ -58,9 +58,9 @@ class PearsonCorrelationPairsTradingAlphaModel(BasePairsTradingAlphaModel):
             df = self.get_price_dataframe(history)
             stop = len(df.columns)
 
-            corr = dict()
+            corr = {}
 
-            for i in range(0, stop):
+            for i in range(stop):
                 for j in range(i+1, stop):
                     if (j, i) not in corr:
                         corr[(i, j)] = pearsonr(df.iloc[:,i], df.iloc[:,j])[0]
@@ -90,7 +90,7 @@ class PearsonCorrelationPairsTradingAlphaModel(BasePairsTradingAlphaModel):
         is_single_timeZone = len(set(timezones.values())) == 1
 
         if not is_single_timeZone:
-            series_dict = dict()
+            series_dict = {}
 
             for column in df:
                 # Change the dataframe index from data time to UTC time

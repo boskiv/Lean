@@ -46,11 +46,10 @@ class OptionExerciseAssignRegressionAlgorithm(QCAlgorithm):
                                x.Expiry.date() == self.Time.date() and
                                x.Strike < chain.Underlying.Price and
                                x.Right == OptionRight.Call, chain)
-            
-            # sorted the contracts by their strikes, find the second strike under market price 
-            sorted_contracts = sorted(contracts, key = lambda x: x.Strike, reverse = True)[:2]
 
-            if sorted_contracts:
+            if sorted_contracts := sorted(
+                contracts, key=lambda x: x.Strike, reverse=True
+            )[:2]:
                 self.MarketOrder(sorted_contracts[0].Symbol, 1)
                 self.MarketOrder(sorted_contracts[1].Symbol, -1)
 

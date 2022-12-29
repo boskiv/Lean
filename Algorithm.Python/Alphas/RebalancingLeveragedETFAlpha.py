@@ -73,7 +73,6 @@ class RebalancingLeveragedETFAlphaModel(AlphaModel):
         '''Scan to see if the returns are greater than 1% at 2.15pm to emit an insight.'''
 
         insights = []
-        magnitude = 0.0005
         # Paper suggests leveraged ETF's rebalance from 2.15pm - to close
         # giving an insight period of 105 minutes.
         period = timedelta(minutes=105)
@@ -88,6 +87,7 @@ class RebalancingLeveragedETFAlphaModel(AlphaModel):
 
         # Check if the returns are > 1% at 14.15
         if algorithm.Time.hour == 14 and algorithm.Time.minute == 15:
+            magnitude = 0.0005
             for group in self.ETFgroups:
                 if group.yesterdayClose == 0 or group.yesterdayClose is None: continue
                 returns = round((algorithm.Portfolio[group.underlying].Price - group.yesterdayClose) / group.yesterdayClose, 10)

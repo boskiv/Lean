@@ -50,8 +50,8 @@ class FilterUniverseRegressionAlgorithm(QCAlgorithm):
             if kvp.Key != self.OptionSymbol: continue
 
             chain = kvp.Value
-            contracts = [option for option in sorted(chain, key = lambda x:x.Strike, reverse = True)]
-            
-            if contracts:
+            if contracts := list(
+                sorted(chain, key=lambda x: x.Strike, reverse=True)
+            ):
                 self.MarketOrder(contracts[0].Symbol, 1)
 

@@ -34,7 +34,7 @@ class BasicTemplateIndiaIndexAlgorithm(QCAlgorithm):
         self.Nifty = self.AddIndex("NIFTY50", Resolution.Minute, Market.India).Symbol
         # Trade Index based ETF
         self.NiftyETF = self.AddEquity("JUNIORBEES", Resolution.Minute, Market.India).Symbol
-   
+
         # Set Order Properties as per the requirements for order placement
         self.DefaultOrderProperties = IndiaOrderProperties(Exchange.NSE)
 
@@ -42,7 +42,7 @@ class BasicTemplateIndiaIndexAlgorithm(QCAlgorithm):
         self._emaSlow = self.EMA(self.Nifty, 80)
         self._emaFast = self.EMA(self.Nifty, 200)
 
-        self.Debug("numpy test >>> print numpy.pi: " + str(np.pi))
+        self.Debug(f"numpy test >>> print numpy.pi: {str(np.pi)}")
 
 
     def OnData(self, data):

@@ -53,7 +53,7 @@ class BasicTemplateFrameworkAlgorithm(QCAlgorithm):
         self.SetExecution(ImmediateExecutionModel())
         self.SetRiskManagement(MaximumDrawdownPercentPerSecurity(0.01))
 
-        self.Debug("numpy test >>> print numpy.pi: " + str(np.pi))
+        self.Debug(f"numpy test >>> print numpy.pi: {str(np.pi)}")
 
     def OnOrderEvent(self, orderEvent):
         if orderEvent.Status == OrderStatus.Filled:

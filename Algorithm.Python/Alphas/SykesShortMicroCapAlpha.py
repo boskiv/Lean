@@ -49,14 +49,13 @@ class SykesShortMicroCapAlphaModel(AlphaModel):
     '''Uses ranking of intraday percentage difference between open price and close price to create magnitude and direction prediction for insights'''
 
     def __init__(self, *args, **kwargs):
-        lookback = kwargs['lookback'] if 'lookback' in kwargs else 1
-        resolution = kwargs['resolution'] if 'resolution' in kwargs else Resolution.Daily
+        lookback = kwargs.get('lookback', 1)
+        resolution = kwargs.get('resolution', Resolution.Daily)
         self.predictionInterval = Time.Multiply(Extensions.ToTimeSpan(resolution), lookback)
-        self.numberOfStocks = kwargs['numberOfStocks'] if 'numberOfStocks' in kwargs else 10
+        self.numberOfStocks = kwargs.get('numberOfStocks', 10)
 
     def Update(self, algorithm, data):
-        insights = []
-        symbolsRet = dict()
+        symbolsRet = {}
 
         for security in algorithm.ActiveSecurities.Values:
             if security.HasData:
@@ -69,11 +68,16 @@ class SykesShortMicroCapAlphaModel(AlphaModel):
         pumpedStocks = dict(sorted(symbolsRet.items(),
                                    key = lambda kv: (-round(kv[1], 6), kv[0]))[:self.numberOfStocks])
 
-        # Emit "down" insight for "pumped" penny stocks
-        for symbol, value in pumpedStocks.items():
-            insights.append(Insight.Price(symbol, self.predictionInterval, InsightDirection.Down, abs(value), None))
-
-        return insights
+        return [
+            Insight.Price(
+                symbol,
+                self.predictionInterval,
+                InsightDirection.Down,
+                abs(value),
+                None,
+            )
+            for symbol, value in pumpedStocks.items()
+        ]
 
 
 class PennyStockUniverseSelectionModel(FundamentalUniverseSelectionModel):

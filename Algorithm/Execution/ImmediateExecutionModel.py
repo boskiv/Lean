@@ -34,8 +34,13 @@ class ImmediateExecutionModel(ExecutionModel):
                 # calculate remaining quantity to be ordered
                 quantity = OrderSizing.GetUnorderedQuantity(algorithm, target, security)
                 if quantity != 0:
-                    aboveMinimumPortfolio = BuyingPowerModelExtensions.AboveMinimumOrderMarginPortfolioPercentage(security.BuyingPowerModel, security, quantity, algorithm.Portfolio, algorithm.Settings.MinimumOrderMarginPortfolioPercentage)
-                    if aboveMinimumPortfolio:
+                    if aboveMinimumPortfolio := BuyingPowerModelExtensions.AboveMinimumOrderMarginPortfolioPercentage(
+                        security.BuyingPowerModel,
+                        security,
+                        quantity,
+                        algorithm.Portfolio,
+                        algorithm.Settings.MinimumOrderMarginPortfolioPercentage,
+                    ):
                         algorithm.MarketOrder(security, quantity)
 
             self.targetsCollection.ClearFulfilled(algorithm)

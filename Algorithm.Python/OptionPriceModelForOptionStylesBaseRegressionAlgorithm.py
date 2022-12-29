@@ -31,7 +31,7 @@ class OptionPriceModelForOptionStylesBaseRegressionAlgorithm(QCAlgorithm):
         for kvp in slice.OptionChains:
             if self._option is None or kvp.Key != self._option.Symbol: continue
 
-            self.CheckGreeks([contract for contract in kvp.Value])
+            self.CheckGreeks(list(kvp.Value))
 
     def OnEndOfDay(self, symbol):
         self._checkGreeks = True

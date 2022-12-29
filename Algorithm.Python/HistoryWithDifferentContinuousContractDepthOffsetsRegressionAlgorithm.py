@@ -37,6 +37,6 @@ class HistoryWithDifferentContinuousContractDepthOffsetsRegressionAlgorithm(QCAl
 
         # Check that prices at each time are different for different contract depth offsets
         for j in range(historyResults[0].size):
-            closePrices = set(historyResults[i][j] for i in range(len(historyResults)))
+            closePrices = {historyResults[i][j] for i in range(len(historyResults))}
             if len(closePrices) != len(contractDepthOffsets):
                 raise Exception("History results close prices should have been different for each data mapping mode at each time")

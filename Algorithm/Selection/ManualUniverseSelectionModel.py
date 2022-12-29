@@ -35,12 +35,12 @@ class ManualUniverseSelectionModel(UniverseSelectionModel):
         Returns:
             The universes to be used by the algorithm'''
         universeSettings = self.universeSettings \
-            if self.universeSettings is not None else algorithm.UniverseSettings
+                if self.universeSettings is not None else algorithm.UniverseSettings
 
         resolution = universeSettings.Resolution
         type = typeof(Tick) if resolution == Resolution.Tick else typeof(TradeBar)
 
-        universes = list()
+        universes = []
 
         # universe per security type/market
         self.symbols = sorted(self.symbols, key=lambda s: (s.ID.Market, s.SecurityType))

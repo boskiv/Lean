@@ -60,13 +60,17 @@ class FutureOptionShortPutOTMExpiryRegressionAlgorithm(QCAlgorithm):
         # Assert delistings, so that we can make sure that we receive the delisting warnings at
         # the expected time. These assertions detect bug #4872
         for delisting in data.Delistings.Values:
-            if delisting.Type == DelistingType.Warning:
-                if delisting.Time != datetime(2020, 6, 19):
-                    raise AssertionError(f"Delisting warning issued at unexpected date: {delisting.Time}")
+            if (
+                delisting.Type == DelistingType.Warning
+                and delisting.Time != datetime(2020, 6, 19)
+            ):
+                raise AssertionError(f"Delisting warning issued at unexpected date: {delisting.Time}")
 
-            if delisting.Type == DelistingType.Delisted:
-                if delisting.Time != datetime(2020, 6, 20):
-                    raise AssertionError(f"Delisting happened at unexpected date: {delisting.Time}")
+            if (
+                delisting.Type == DelistingType.Delisted
+                and delisting.Time != datetime(2020, 6, 20)
+            ):
+                raise AssertionError(f"Delisting happened at unexpected date: {delisting.Time}")
 
 
     def OnOrderEvent(self, orderEvent: OrderEvent):

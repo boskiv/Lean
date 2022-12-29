@@ -31,7 +31,7 @@ class BasicTemplateIndiaAlgorithm(QCAlgorithm):
         self.SetCash(100000)            #Set Strategy Cash
         # Find more symbols here: http://quantconnect.com/data
         self.AddEquity("YESBANK", Resolution.Minute, Market.India)
-        self.Debug("numpy test >>> print numpy.pi: " + str(np.pi))
+        self.Debug(f"numpy test >>> print numpy.pi: {str(np.pi)}")
 
         # Set Order Properties as per the requirements for order placement
         self.DefaultOrderProperties = IndiaOrderProperties(Exchange.NSE)

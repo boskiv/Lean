@@ -63,7 +63,7 @@ class ConsolidateRegressionAlgorithm(QCAlgorithm):
     def IncrementCounter(self, id):
         if id == 1:
             self._customDataConsolidator += 1
-        if id == 2:
+        elif id == 2:
             self._customDataConsolidator2 += 1
 
     def UpdateTradeBar(self, sma, bar, position):

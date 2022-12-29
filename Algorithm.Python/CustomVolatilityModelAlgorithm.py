@@ -66,7 +66,7 @@ class CustomVolatilityModel():
 
         if self.needsUpdate:
             self.needsUpdate = False
-            std = np.std([ x for x in self.window ])
+            std = np.std(list(self.window))
             self.Volatility = std * np.sqrt(252.0)
 
     # Returns history requirements for the volatility model expressed in the form of history request

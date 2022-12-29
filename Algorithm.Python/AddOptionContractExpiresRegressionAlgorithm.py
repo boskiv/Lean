@@ -42,7 +42,7 @@ class AddOptionContractExpiresRegressionAlgorithm(QCAlgorithm):
         Arguments:
             data: Slice object keyed by symbol containing the stock data
         '''
-        if self._option == None:
+        if self._option is None:
             options = self.OptionChainProvider.GetOptionContractList(self._twx, self.Time)
             options = sorted(options, key=lambda x: x.ID.Symbol)
 

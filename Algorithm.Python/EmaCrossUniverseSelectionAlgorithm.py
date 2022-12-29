@@ -61,7 +61,7 @@ class EmaCrossUniverseSelectionAlgorithm(QCAlgorithm):
         values.sort(key=lambda x: x.scale, reverse=True)
 
         for x in values[:self.coarse_count]:
-            self.Log('symbol: ' + str(x.symbol.Value) + '  scale: ' + str(x.scale))
+            self.Log(f'symbol: {str(x.symbol.Value)}  scale: {str(x.scale)}')
 
         # we need to return only the symbol objects
         return [ x.symbol for x in values[:self.coarse_count] ]

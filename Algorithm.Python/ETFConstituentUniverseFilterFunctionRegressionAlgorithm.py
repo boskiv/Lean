@@ -42,7 +42,7 @@ class ETFConstituentUniverseFilterFunctionRegressionAlgorithm(QCAlgorithm):
         constituentsSymbols = [i.Symbol for i in constituentsData]
         self.etfConstituentData = {i.Symbol: i for i in constituentsData}
 
-        if len(constituentsData) == 0:
+        if not constituentsData:
             raise Exception(f"Constituents collection is empty on {self.UtcTime.strftime('%Y-%m-%d %H:%M:%S.%f')}")
         if self.aapl not in constituentsSymbols:
             raise Exception("AAPL is not int he constituents data provided to the algorithm")

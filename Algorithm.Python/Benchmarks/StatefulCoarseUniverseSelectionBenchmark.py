@@ -34,12 +34,15 @@ class StatefulCoarseUniverseSelectionBenchmark(QCAlgorithm):
         sortedByDollarVolume = sorted(selected, key=lambda x: x.DollarVolume, reverse=True)
 
         # return the symbol objects of the top entries from our sorted collection
-        return [ x.Symbol for x in sortedByDollarVolume[:self.numberOfSymbols] if not (x.Symbol in self._blackList) ]
+        return [
+            x.Symbol
+            for x in sortedByDollarVolume[: self.numberOfSymbols]
+            if x.Symbol not in self._blackList
+        ]
 
     def OnData(self, slice):
         if slice.HasData:
-            symbol = slice.Keys[0]
-            if symbol:
+            if symbol := slice.Keys[0]:
                 if len(self._blackList) > 50:
                     self._blackList.pop(0)
                 self._blackList.append(symbol)

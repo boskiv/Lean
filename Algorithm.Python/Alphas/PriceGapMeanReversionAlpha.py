@@ -70,7 +70,7 @@ class PriceGapMeanReversionAlphaModel:
     def __init__(self, *args, **kwargs):
         ''' Initialize variables and dictionary for Symbol Data to support algorithm's function '''
         self.lookback = 100
-        self.resolution = kwargs['resolution'] if 'resolution' in kwargs else Resolution.Minute
+        self.resolution = kwargs.get('resolution', Resolution.Minute)
         self.prediction_interval = Time.Multiply(Extensions.ToTimeSpan(self.resolution), 5) ## Arbitrary
         self.symbolDataBySymbol = {}
 

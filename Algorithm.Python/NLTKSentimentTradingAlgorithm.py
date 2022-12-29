@@ -57,7 +57,5 @@ class NLTKSentimentTradingAlgorithm(QCAlgorithm):
 
         headline = [x.split(',')[1] for x in data][1:]
         date = [x.split(',')[0] for x in data][1:]
-        
-        # create a pd dataframe with 1st col being date and 2nd col being headline (content of the text)
-        df = pd.DataFrame(headline, index = date, columns = ['headline'])
-        return df
+
+        return pd.DataFrame(headline, index = date, columns = ['headline'])

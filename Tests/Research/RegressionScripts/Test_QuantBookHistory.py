@@ -23,7 +23,7 @@ class SecurityHistoryTest():
         self.column = 'close'
 
     def __str__(self):
-        return "{} on {}".format(self.symbol.ID, self.qb.StartDate)
+        return f"{self.symbol.ID} on {self.qb.StartDate}"
 
     def test_period_overload(self, period):
         history = self.qb.History([self.symbol], period)

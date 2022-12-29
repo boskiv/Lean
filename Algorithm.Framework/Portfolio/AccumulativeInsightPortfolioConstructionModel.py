@@ -69,7 +69,9 @@ class AccumulativeInsightPortfolioConstructionModel(EqualWeightingPortfolioConst
 
             percentPerSymbol[insight.Symbol] = targetPercent
 
-        return dict((insight, percentPerSymbol[insight.Symbol]) for insight in activeInsights)
+        return {
+            insight: percentPerSymbol[insight.Symbol] for insight in activeInsights
+        }
 
     def CreateTargets(self, algorithm, insights):
         '''Create portfolio targets from the specified insights

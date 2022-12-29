@@ -45,14 +45,18 @@ class EqualWeightingPortfolioConstructionModel(PortfolioConstructionModel):
         '''Will determine the target percent for each insight
         Args:
             activeInsights: The active insights to generate a target for'''
-        result = {}
-
         # give equal weighting to each security
         count = sum(x.Direction != InsightDirection.Flat and self.RespectPortfolioBias(x) for x in activeInsights)
         percent = 0 if count == 0 else 1.0 / count
-        for insight in activeInsights:
-            result[insight] = (insight.Direction if self.RespectPortfolioBias(insight) else InsightDirection.Flat) * percent
-        return result
+        return {
+            insight: (
+                insight.Direction
+                if self.RespectPortfolioBias(insight)
+                else InsightDirection.Flat
+            )
+            * percent
+            for insight in activeInsights
+        }
 
     def RespectPortfolioBias(self, insight):
         '''Method that will determine if a given insight respects the portfolio bias

@@ -314,10 +314,10 @@ class Api:
             }, True)
 
         if save and json['success']:
-            with open(backtestId + '.html', "w") as fp:
+            with open(f'{backtestId}.html', "w") as fp:
                 fp.write(json['report'])
             print(f'Log saved as {backtestId}.html')
-            
+
         return json
 
     def update_backtest(self, projectId, backtestId, backtestName = '', backtestNote = ''):
@@ -366,23 +366,27 @@ class Api:
         Returns:
             Dictionary that includes the list of live algorithms
         '''
-        if (status != None and
-            status != "Running" and
-            status != "RuntimeError" and
-            status != "Stopped" and
-            status != "Liquidated"):
+        if status not in [
+            None,
+            "Running",
+            "RuntimeError",
+            "Stopped",
+            "Liquidated",
+        ]:
             raise ValueError(
                 "The Api only supports Algorithm Statuses of Running, Stopped, RuntimeError and Liquidated")
 
-        if endTime == None:
+        if endTime is None:
             endTime = dt.utcnow()
 
-        return self.Execute('live/read',
+        return self.Execute(
+            'live/read',
             {
                 'status': str(status),
                 'end': mktime(endTime.timetuple()),
-                'start': 0 if startTime == None else mktime(startTime.timetuple())
-            })
+                'start': 0 if startTime is None else mktime(startTime.timetuple()),
+            },
+        )
 
     def create_live_algorithm(self, projectId, compileId, serverType, baseLiveAlgorithmSettings, versionId="-1"):
         '''Create a new live algorithm for a logged in user.
@@ -458,20 +462,22 @@ class Api:
         Returns:
             List of strings that represent the logs of the algorithm
         '''
-        if endTime == None:
+        if endTime is None:
             endTime = dt.utcnow()
 
-        json = self.Execute('live/read/log',
+        json = self.Execute(
+            'live/read/log',
             {
                 'format': 'json',
                 'projectId': projectId,
                 'algorithmId': algorithmId,
                 'end': mktime(endTime.timetuple()),
-                'start': 0 if startTime == None else mktime(startTime.timetuple())
-            })
+                'start': 0 if startTime is None else mktime(startTime.timetuple()),
+            },
+        )
 
         if save and json['success']:
-            with open(algorithmId + '.txt', "w") as fp:
+            with open(f'{algorithmId}.txt', "w") as fp:
                 fp.write('\n'.join(json['LiveLogs']))
             print(f'Log saved as {algorithmId}.txt')
 
@@ -521,7 +527,7 @@ class Api:
             return False
 
         # download and save the data
-        with open(fileName + '.zip', "wb") as code:
+        with open(f'{fileName}.zip', "wb") as code:
             request = get(link['link'], stream=True)
             for chunk in request.iter_content(DOWNLOAD_CHUNK_SIZE):
                 code.write(chunk)

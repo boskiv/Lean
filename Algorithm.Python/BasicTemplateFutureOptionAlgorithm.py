@@ -68,4 +68,4 @@ class BasicTemplateFutureOptionAlgorithm(QCAlgorithm):
                 self.MarketOrder(selected_contract.Symbol, 1)
 
     def OnOrderEvent(self, orderEvent):
-        self.Debug("{} {}".format(self.Time, orderEvent.ToString()))
+        self.Debug(f"{self.Time} {orderEvent.ToString()}")

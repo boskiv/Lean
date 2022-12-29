@@ -55,11 +55,13 @@ class OptionChainProviderAlgorithm(QCAlgorithm):
 
         contracts = self.OptionChainProvider.GetOptionContractList(self.equity.Symbol, data.Time)
         self.underlyingPrice = self.Securities[self.equity.Symbol].Price
-        # filter the out-of-money call options from the contract list which expire in 10 to 30 days from now on
-        otm_calls = [i for i in contracts if i.ID.OptionRight == OptionRight.Call and
-                                            i.ID.StrikePrice - self.underlyingPrice > 0 and
-                                            10 < (i.ID.Date - data.Time).days < 30]
-        if len(otm_calls) > 0:
+        if otm_calls := [
+            i
+            for i in contracts
+            if i.ID.OptionRight == OptionRight.Call
+            and i.ID.StrikePrice - self.underlyingPrice > 0
+            and 10 < (i.ID.Date - data.Time).days < 30
+        ]:
             contract = sorted(sorted(otm_calls, key = lambda x: x.ID.Date),
                                                      key = lambda x: x.ID.StrikePrice - self.underlyingPrice)[0]
             if contract not in self.contractsAdded:

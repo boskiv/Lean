@@ -40,8 +40,7 @@ class DropboxBaseDataUniverseSelectionAlgorithm(QCAlgorithm):
     def stockDataSource(self, data):
         list = []
         for item in data:
-            for symbol in item["Symbols"]:
-                list.append(symbol)
+            list.extend(iter(item["Symbols"]))
         return list
 
     def OnData(self, slice):

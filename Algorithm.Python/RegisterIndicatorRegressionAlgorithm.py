@@ -99,7 +99,7 @@ class RegisterIndicatorRegressionAlgorithm(QCAlgorithm):
            self.SetHoldings(self._symbol, 0.5)
 
     def OnEndOfAlgorithm(self):
-        if any(not wasCalled for wasCalled in self._selectorCalled):
+        if not all(self._selectorCalled):
             raise ValueError("All selectors should of been called")
         if any(not indicator.IsReady for indicator in self._indicators):
             raise ValueError("All indicators should be ready")

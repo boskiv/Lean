@@ -71,7 +71,9 @@ class MeanReversionPortfolioConstructionModel(PortfolioConstructionModel):
         targets = {}
 
         # If we have no insights or non-ready just return an empty target list
-        if len(activeInsights) == 0 or not all([self.symbol_data[x.Symbol].IsReady for x in activeInsights]):
+        if len(activeInsights) == 0 or not all(
+            self.symbol_data[x.Symbol].IsReady for x in activeInsights
+        ):
             return targets
 
         num_of_assets = len(activeInsights)
@@ -79,7 +81,7 @@ class MeanReversionPortfolioConstructionModel(PortfolioConstructionModel):
             self.num_of_assets = num_of_assets
             # Initialize portfolio weightings vector
             self.weight_vector = np.ones(num_of_assets) * (1/num_of_assets)
-            
+
         ### Get price relatives vs expected price (SMA)
         price_relatives = self.GetPriceRelatives(activeInsights)     # \tilde{x}_{t+1}
 
@@ -89,7 +91,7 @@ class MeanReversionPortfolioConstructionModel(PortfolioConstructionModel):
         next_prediction = price_relatives.mean()        # \bar{x}_{t+1}
         assets_mean_dev = price_relatives - next_prediction
         second_norm = (np.linalg.norm(assets_mean_dev)) ** 2
-        
+
         if second_norm == 0.0:
             step_size = 0
         else:

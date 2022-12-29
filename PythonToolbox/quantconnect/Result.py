@@ -125,11 +125,11 @@ class Result:
         charts = json.pop('Charts', None)
         if charts is None: return None
 
-        df_charts = dict()
+        df_charts = {}
         for name, chart in charts.items():
             # Skip Meta data
             if name == 'Meta': continue
-            columns = list()
+            columns = []
             for column, series in chart['Series'].items():
                 df = pd.DataFrame(series['Values'])
                 df['x'] = pd.to_datetime(df['x'], unit='s')
@@ -148,24 +148,24 @@ class Result:
         rollingWindow = json.pop('RollingWindow', None)
         if rollingWindow is None: return None
 
-        series = dict()
+        series = {}
         if 'TotalPerformance' in json:
             window = json['TotalPerformance']
-            if window is None: window = dict()
-            stats = window.get('PortfolioStatistics', dict())
-            stats.update(window.get('TradeStatistics', dict()))
+            if window is None:
+                window = {}
+            stats = window.get('PortfolioStatistics', {})
+            stats.update(window.get('TradeStatistics', {}))
             series = {'TotalPerformance': pd.Series(stats)}
 
         for row, window in rollingWindow.items():
-            stats = window.get('PortfolioStatistics', dict())
-            stats.update(window.get('TradeStatistics', dict()))
-            series.update({row: pd.Series(stats)})
+            stats = window.get('PortfolioStatistics', {})
+            stats.update(window.get('TradeStatistics', {}))
+            series[row] = pd.Series(stats)
 
         return pd.DataFrame(series).transpose()
 
     def __direction_int_to_str(self, value):
-        if value is None: return None
-        return [ 'Buy', 'Sell', 'Hold' ][value]
+        return None if value is None else [ 'Buy', 'Sell', 'Hold' ][value]
 
     def __str_to_datetime(self, value):
         if value is None: return None

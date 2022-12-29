@@ -34,11 +34,11 @@ class PeriodBasedHistoryRequestNotAllowedWithTickResolutionRegressionAlgorithm(Q
             "Tick history call with symbol array with explicit tick resolution")
 
         history = self.History[Tick](spy, TimeSpan.FromHours(12))
-        if len(list(history)) == 0:
+        if not list(history):
             raise Exception("On history call with implicit tick resolution: history returned no results")
 
         history = self.History[Tick](spy, TimeSpan.FromHours(12), Resolution.Tick)
-        if len(list(history)) == 0:
+        if not list(history):
             raise Exception("On history call with explicit tick resolution: history returned no results")
 
     def AssertThatHistoryThrowsForTickResolution(self, historyCall, historyCallDescription):

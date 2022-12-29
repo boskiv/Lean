@@ -53,14 +53,14 @@ class LiquidETFUniverseFrameworkAlgorithm(QCAlgorithm):
 
     def OnData(self, slice):
 
-        if all([self.Portfolio[x].Invested for x in self.symbols]):
+        if all(self.Portfolio[x].Invested for x in self.symbols):
             return
 
-        # Emit insights
-        insights = [Insight.Price(x, timedelta(1), InsightDirection.Up)
-            for x in self.symbols if self.Securities[x].Price > 0]
-
-        if len(insights) > 0:
+        if insights := [
+            Insight.Price(x, timedelta(1), InsightDirection.Up)
+            for x in self.symbols
+            if self.Securities[x].Price > 0
+        ]:
             self.EmitInsights(insights)
 
     def OnSecuritiesChanged(self, changes):

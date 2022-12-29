@@ -35,13 +35,13 @@ class WeeklyUniverseSelectionRegressionAlgorithm(QCAlgorithm):
         # liquidate removed securities
         for security in self.changes.RemovedSecurities:
             if security.Invested:
-                self.Log("{} Liquidate {}".format(self.Time, security.Symbol))
+                self.Log(f"{self.Time} Liquidate {security.Symbol}")
                 self.Liquidate(security.Symbol)
 
         # we'll simply go long each security we added to the universe
         for security in self.changes.AddedSecurities:
             if not security.Invested:
-                self.Log("{} Buy {}".format(self.Time, security.Symbol))
+                self.Log(f"{self.Time} Buy {security.Symbol}")
                 self.SetHoldings(security.Symbol, 1)
 
         self.changes = None

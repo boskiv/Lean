@@ -72,6 +72,13 @@ class BasicTemplateOptionsHistoryAlgorithm(QCAlgorithm):
             if change.Symbol.Value == "GOOG": return
             history = self.History(change.Symbol, 10, Resolution.Minute).sort_index(level='time', ascending=False)[:3]
             for index, row in history.iterrows():
-                self.Log("History: " + str(index[3])
-                        + ": " + index[4].strftime("%m/%d/%Y %I:%M:%S %p")
-                        + " > " + str(row.close))
+                self.Log(
+                    (
+                        (
+                            f"History: {str(index[3])}: "
+                            + index[4].strftime("%m/%d/%Y %I:%M:%S %p")
+                        )
+                        + " > "
+                    )
+                    + str(row.close)
+                )

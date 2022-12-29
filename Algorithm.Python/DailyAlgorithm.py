@@ -44,7 +44,7 @@ class DailyAlgorithm(QCAlgorithm):
         if not self.macd.IsReady: return
         if not data.ContainsKey("IBM"): return
         if data["IBM"] is None:
-            self.Log("Price Missing Time: %s"%str(self.Time))
+            self.Log(f"Price Missing Time: {str(self.Time)}")
             return
         if self.lastAction is not None and self.lastAction.date() == self.Time.date(): return
 

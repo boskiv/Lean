@@ -51,13 +51,17 @@ class IndexOptionCallITMExpiryRegressionAlgorithm(QCAlgorithm):
         # Assert delistings, so that we can make sure that we receive the delisting warnings at
         # the expected time. These assertions detect bug #4872
         for delisting in data.Delistings.Values:
-            if delisting.Type == DelistingType.Warning:
-                if delisting.Time != datetime(2021, 1, 15):
-                    raise Exception(f"Delisting warning issued at unexpected date: {delisting.Time}")
-            
-            if delisting.Type == DelistingType.Delisted:
-                if delisting.Time != datetime(2021, 1, 16):
-                    raise Exception(f"Delisting happened at unexpected date: {delisting.Time}")
+            if (
+                delisting.Type == DelistingType.Warning
+                and delisting.Time != datetime(2021, 1, 15)
+            ):
+                raise Exception(f"Delisting warning issued at unexpected date: {delisting.Time}")
+
+            if (
+                delisting.Type == DelistingType.Delisted
+                and delisting.Time != datetime(2021, 1, 16)
+            ):
+                raise Exception(f"Delisting happened at unexpected date: {delisting.Time}")
 
     def OnOrderEvent(self, orderEvent: OrderEvent):
         if orderEvent.Status != OrderStatus.Filled:
@@ -91,7 +95,7 @@ class IndexOptionCallITMExpiryRegressionAlgorithm(QCAlgorithm):
         if orderEvent.Direction == OrderDirection.Buy and option.Holdings.Quantity != 1:
             raise Exception(f"No holdings were created for option contract {option.Symbol}")
         if orderEvent.Direction == OrderDirection.Sell and option.Holdings.Quantity != 0:
-            raise Exception(f"Holdings were found after a filled option exercise")
+            raise Exception("Holdings were found after a filled option exercise")
         if "Exercise" in orderEvent.Message and option.Holdings.Quantity != 0:
             raise Exception(f"Holdings were found after exercising option contract {option.Symbol}")
 

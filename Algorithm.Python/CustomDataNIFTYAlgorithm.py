@@ -137,7 +137,7 @@ class CorrelationPair:
         self.NiftyPrice = 0        # Nifty price for this correlation pair
         self.CurrencyPrice = 0     # Currency price for this correlation pair
         self._date = datetime.min    # Date of the correlation pair
-        if len(args) > 0: self._date = args[0]
+        if args: self._date = args[0]
 
     def date(self):
         return self._date.date()

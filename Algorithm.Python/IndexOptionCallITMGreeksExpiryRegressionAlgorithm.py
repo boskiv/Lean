@@ -53,10 +53,13 @@ class IndexOptionCallITMGreeksExpiryRegressionAlgorithm(QCAlgorithm):
         if data.OptionChains.Count == 0:
             return
 
-        if all([any([c.Symbol not in data for c in o.Contracts.Values]) for o in data.OptionChains.Values]):
+        if all(
+            any(c.Symbol not in data for c in o.Contracts.Values)
+            for o in data.OptionChains.Values
+        ):
             return
 
-        if len(list(list(data.OptionChains.Values)[0].Contracts.Values)) == 0:
+        if not list(list(data.OptionChains.Values)[0].Contracts.Values):
             raise Exception(f"No contracts found in the option {list(data.OptionChains.Keys)[0]}")
 
         deltas = [i.Greeks.Delta for i in self.SortByMaxVolume(data)]
@@ -69,25 +72,25 @@ class IndexOptionCallITMGreeksExpiryRegressionAlgorithm(QCAlgorithm):
         # The commented out test cases all return zero.
         # This is because of failure to evaluate the greeks in the option pricing model, most likely
         # due to us not clearing the default 30 day requirement for the volatility model to start being updated.
-        if any([i for i in deltas if i == 0]):
+        if any(i for i in deltas if i == 0):
             raise Exception("Option contract Delta was equal to zero")
 
         # Delta is 1, therefore we expect a gamma of 0
-        if any([i for i in gammas if i == 0]):
+        if any(i for i in gammas if i == 0):
             raise AggregateException("Option contract Gamma was equal to zero")
 
-        if any([i for i in lambda_ if lambda_ == 0]):
+        if any(i for i in lambda_ if lambda_ == 0):
             raise AggregateException("Option contract Lambda was equal to zero")
 
-        if any([i for i in rho if i == 0]):
+        if any(i for i in rho if i == 0):
             raise Exception("Option contract Rho was equal to zero")
-        
-        if any([i for i in theta if i == 0]):
+
+        if any(i for i in theta if i == 0):
             raise Exception("Option contract Theta was equal to zero")
 
         # The strike is far away from the underlying asset's price, and we're very close to expiry.
         # Zero is an expected value here.
-        if any([i for i in vega if vega == 0]):
+        if any(i for i in vega if vega == 0):
             raise AggregateException("Option contract Vega was equal to zero")
 
         if not self.invested:
@@ -103,8 +106,14 @@ class IndexOptionCallITMGreeksExpiryRegressionAlgorithm(QCAlgorithm):
             raise Exception(f"Expected no holdings at end of algorithm, but are invested in: {', '.join(self.Portfolio.Keys)}")
 
         if not self.invested:
-            raise Exception(f"Never checked greeks, maybe we have no option data?")
+            raise Exception("Never checked greeks, maybe we have no option data?")
 
     def SortByMaxVolume(self, data: Slice):
-        chain = [i for i in sorted(list(data.OptionChains.Values), key=lambda x: sum([j.Volume for j in x.Contracts.Values]), reverse=True)][0]
+        chain = list(
+            sorted(
+                list(data.OptionChains.Values),
+                key=lambda x: sum(j.Volume for j in x.Contracts.Values),
+                reverse=True,
+            )
+        )[0]
         return chain.Contracts.Values

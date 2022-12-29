@@ -45,20 +45,20 @@ class BasicTemplateOptionEquityStrategyAlgorithm(QCAlgorithm):
         if chain is None:
             return
 
-        groupedByExpiry = dict()
+        groupedByExpiry = {}
         for contract in [contract for contract in chain if contract.Right == OptionRight.Call]:
             groupedByExpiry.setdefault(int(contract.Expiry.timestamp()), []).append(contract)
 
         firstExpiry = list(sorted(groupedByExpiry))[0]
         callContracts = sorted(groupedByExpiry[firstExpiry], key = lambda x: x.Strike)
-        
+
         expiry = callContracts[0].Expiry
         lowerStrike = callContracts[0].Strike
         middleStrike = callContracts[1].Strike
         higherStrike = callContracts[2].Strike
 
         optionStrategy = OptionStrategies.CallButterfly(self.option_symbol, higherStrike, middleStrike, lowerStrike, expiry)
-                    
+
         self.Order(optionStrategy, 10)
 
     def OnOrderEvent(self, orderEvent):

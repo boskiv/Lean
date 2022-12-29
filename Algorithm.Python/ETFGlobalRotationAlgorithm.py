@@ -69,16 +69,20 @@ class ETFGlobalRotationAlgorithm(QCAlgorithm):
 
             orderedObjScores = sorted(self.SymbolData, key=lambda x: Score(x[1].Current.Value,x[2].Current.Value).ObjectiveScore(), reverse=True)
             for x in orderedObjScores:
-                self.Log(">>SCORE>>" + x[0] + ">>" + str(Score(x[1].Current.Value,x[2].Current.Value).ObjectiveScore()))
+                self.Log(
+                    f">>SCORE>>{x[0]}>>{str(Score(x[1].Current.Value, x[2].Current.Value).ObjectiveScore())}"
+                )
             # pick which one is best from growth and safety symbols
             bestGrowth = orderedObjScores[0]
             if Score(bestGrowth[1].Current.Value,bestGrowth[2].Current.Value).ObjectiveScore() > 0:
                 if (self.Portfolio[bestGrowth[0]].Quantity == 0):
                     self.Log("PREBUY>>LIQUIDATE>>")
                     self.Liquidate()
-                self.Log(">>BUY>>" + str(bestGrowth[0]) + "@" + str(100 * bestGrowth[1].Current.Value))
+                self.Log(
+                    f">>BUY>>{str(bestGrowth[0])}@{str(100 * bestGrowth[1].Current.Value)}"
+                )
                 qty = self.Portfolio.MarginRemaining / self.Securities[bestGrowth[0]].Close
-                self.MarketOrder(bestGrowth[0], int(qty)) 
+                self.MarketOrder(bestGrowth[0], int(qty))
             else:
             # if no one has a good objective score then let's hold cash this month to be safe
                 self.Log(">>LIQUIDATE>>CASH")

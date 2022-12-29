@@ -67,10 +67,11 @@ class VolumeWeightedAveragePriceExecutionModel(ExecutionModel):
             changes: The security additions and removals from the algorithm'''
         for removed in changes.RemovedSecurities:
             # clean up removed security data
-            if removed.Symbol in self.symbolData:
-                if self.IsSafeToRemove(algorithm, removed.Symbol):
-                    data = self.symbolData.pop(removed.Symbol)
-                    algorithm.SubscriptionManager.RemoveConsolidator(removed.Symbol, data.Consolidator)
+            if removed.Symbol in self.symbolData and self.IsSafeToRemove(
+                algorithm, removed.Symbol
+            ):
+                data = self.symbolData.pop(removed.Symbol)
+                algorithm.SubscriptionManager.RemoveConsolidator(removed.Symbol, data.Consolidator)
 
         for added in changes.AddedSecurities:
             if added.Symbol not in self.symbolData:
@@ -83,16 +84,17 @@ class VolumeWeightedAveragePriceExecutionModel(ExecutionModel):
         if unorderedQuantity > 0:
             if data.Security.BidPrice < data.VWAP:
                 return True
-        else:
-            if data.Security.AskPrice > data.VWAP:
-                return True
+        elif data.Security.AskPrice > data.VWAP:
+            return True
 
         return False
 
     def IsSafeToRemove(self, algorithm, symbol):
         '''Determines if it's safe to remove the associated symbol data'''
         # confirm the security isn't currently a member of any universe
-        return not any([kvp.Value.ContainsMember(symbol) for kvp in algorithm.UniverseManager])
+        return not any(
+            kvp.Value.ContainsMember(symbol) for kvp in algorithm.UniverseManager
+        )
 
 class SymbolData:
     def __init__(self, algorithm, security):
@@ -146,13 +148,11 @@ class IntradayVwap:
     def GetVolumeAndAveragePrice(self, input):
         '''Determines the volume and price to be used for the current input in the VWAP computation'''
 
-        if type(input) is Tick:
-            if input.TickType == TickType.Trade:
-                return True, float(input.Quantity), float(input.LastPrice)
+        if type(input) is Tick and input.TickType == TickType.Trade:
+            return True, float(input.Quantity), float(input.LastPrice)
 
-        if type(input) is TradeBar:
-            if not input.IsFillForward:
-                averagePrice = float(input.High + input.Low + input.Close) / 3
-                return True, float(input.Volume), averagePrice
+        if type(input) is TradeBar and not input.IsFillForward:
+            averagePrice = float(input.High + input.Low + input.Close) / 3
+            return True, float(input.Volume), averagePrice
 
         return False, 0.0, 0.0

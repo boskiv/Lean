@@ -81,10 +81,11 @@ class StandardDeviationExecutionModel(ExecutionModel):
         for removed in changes.RemovedSecurities:
             # clean up data from removed securities
             symbol = removed.Symbol
-            if symbol in self.symbolData:
-                if self.IsSafeToRemove(algorithm, symbol):
-                    data = self.symbolData.pop(symbol)
-                    algorithm.SubscriptionManager.RemoveConsolidator(symbol, data.Consolidator)
+            if symbol in self.symbolData and self.IsSafeToRemove(
+                algorithm, symbol
+            ):
+                data = self.symbolData.pop(symbol)
+                algorithm.SubscriptionManager.RemoveConsolidator(symbol, data.Consolidator)
 
 
     def PriceIsFavorable(self, data, unorderedQuantity):
@@ -101,7 +102,9 @@ class StandardDeviationExecutionModel(ExecutionModel):
     def IsSafeToRemove(self, algorithm, symbol):
         '''Determines if it's safe to remove the associated symbol data'''
         # confirm the security isn't currently a member of any universe
-        return not any([kvp.Value.ContainsMember(symbol) for kvp in algorithm.UniverseManager])
+        return not any(
+            kvp.Value.ContainsMember(symbol) for kvp in algorithm.UniverseManager
+        )
 
 class SymbolData:
     def __init__(self, algorithm, security, period, resolution):

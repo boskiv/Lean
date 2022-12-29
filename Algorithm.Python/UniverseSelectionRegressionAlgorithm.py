@@ -38,7 +38,11 @@ class UniverseSelectionRegressionAlgorithm(QCAlgorithm):
 
 
     def CoarseSelectionFunction(self, coarse):
-        return [ c.Symbol for c in coarse if c.Symbol.Value == "GOOG" or c.Symbol.Value == "GOOCV" or c.Symbol.Value == "GOOAV" or c.Symbol.Value == "GOOGL" ]
+        return [
+            c.Symbol
+            for c in coarse
+            if c.Symbol.Value in ["GOOG", "GOOCV", "GOOAV", "GOOGL"]
+        ]
 
 
     def OnData(self, data):

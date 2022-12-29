@@ -35,11 +35,11 @@ class ConstantAlphaModel(AlphaModel):
         typeString = Extensions.GetEnumString(type, InsightType)
         directionString = Extensions.GetEnumString(direction, InsightDirection)
 
-        self.Name = '{}({},{},{}'.format(self.__class__.__name__, typeString, directionString, strfdelta(period))
+        self.Name = f'{self.__class__.__name__}({typeString},{directionString},{strfdelta(period)}'
         if magnitude is not None:
-            self.Name += ',{}'.format(magnitude)
+            self.Name += f',{magnitude}'
         if confidence is not None:
-            self.Name += ',{}'.format(confidence)
+            self.Name += f',{confidence}'
 
         self.Name += ')'
 
@@ -51,15 +51,19 @@ class ConstantAlphaModel(AlphaModel):
             data: The new data available
         Returns:
             The new insights generated'''
-        insights = []
-
-        for security in self.securities:
-            # security price could be zero until we get the first data point. e.g. this could happen
-            # when adding both forex and equities, we will first get a forex data point
-            if security.Price != 0 and self.ShouldEmitInsight(algorithm.UtcTime, security.Symbol):
-                insights.append(Insight(security.Symbol, self.period, self.type, self.direction, self.magnitude, self.confidence))
-
-        return insights
+        return [
+            Insight(
+                security.Symbol,
+                self.period,
+                self.type,
+                self.direction,
+                self.magnitude,
+                self.confidence,
+            )
+            for security in self.securities
+            if security.Price != 0
+            and self.ShouldEmitInsight(algorithm.UtcTime, security.Symbol)
+        ]
 
 
     def OnSecuritiesChanged(self, algorithm, changes):
@@ -82,11 +86,11 @@ class ConstantAlphaModel(AlphaModel):
 
         generatedTimeUtc = self.insightsTimeBySymbol.get(symbol)
 
-        if generatedTimeUtc is not None:
-            # we previously emitted a insight for this symbol, check it's period to see
-            # if we should emit another insight
-            if utcTime - generatedTimeUtc < self.period:
-                return False
+        if (
+            generatedTimeUtc is not None
+            and utcTime - generatedTimeUtc < self.period
+        ):
+            return False
 
         # we either haven't emitted a insight for this symbol or the previous
         # insight's period has expired, so emit a new insight now for this symbol

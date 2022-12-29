@@ -6,9 +6,7 @@ import subprocess
 import statistics
 from pathlib import Path
 
-dataPath = '../../../Data'
-if len(sys.argv) > 1:
-	dataPath = sys.argv[1]
+dataPath = sys.argv[1] if len(sys.argv) > 1 else '../../../Data'
 print(f'Using data path {dataPath}')
 
 results = {}
@@ -26,27 +24,35 @@ for baseDirectory in ["Algorithm.CSharp/Benchmarks", "Algorithm.Python/Benchmark
 
 			dataPointsPerSecond = []
 			benchmarkLengths = []
-			for x in range(1, 2):
-
-				subprocess.run(["dotnet", "./QuantConnect.Lean.Launcher.dll",
-					"--data-folder " + dataPath,
-					"--algorithm-language " + language,
-					"--algorithm-type-name " + algorithmName,
-					"--algorithm-location " + algorithmLocation,
-					"--log-handler ConsoleErrorLogHandler",
-					"--close-automatically true"],
+			for _ in range(1, 2):
+				subprocess.run(
+					[
+						"dotnet",
+						"./QuantConnect.Lean.Launcher.dll",
+						f"--data-folder {dataPath}",
+						f"--algorithm-language {language}",
+						f"--algorithm-type-name {algorithmName}",
+						f"--algorithm-location {algorithmLocation}",
+						"--log-handler ConsoleErrorLogHandler",
+						"--close-automatically true",
+					],
 					cwd="./Launcher/bin/Release",
 					stdout=subprocess.DEVNULL,
-					stderr=subprocess.DEVNULL)
+					stderr=subprocess.DEVNULL,
+				)
 
-				algorithmLogs = os.path.join("./Launcher/bin/Release", algorithmName + "-log.txt")
+				algorithmLogs = os.path.join(
+					"./Launcher/bin/Release", f"{algorithmName}-log.txt"
+				)
 				file = open(algorithmLogs, 'r')
-				for line in file.readlines():
-					for match in re.findall(r"(\d+)k data points per second", line):
-						dataPointsPerSecond.append(int(match))
-					for match in re.findall(r" completed in (\d+)", line):
-						benchmarkLengths.append(int(match))
-
+				for line in file:
+					dataPointsPerSecond.extend(
+						int(match)
+						for match in re.findall(r"(\d+)k data points per second", line)
+					)
+					benchmarkLengths.extend(
+						int(match) for match in re.findall(r" completed in (\d+)", line)
+					)
 			averageDps = statistics.mean(dataPointsPerSecond)
 			averageLength = statistics.mean(benchmarkLengths)
 			resultsPerLanguage[algorithmName] = { "average-dps": averageDps, "samples": dataPointsPerSecond, "average-length": averageLength }

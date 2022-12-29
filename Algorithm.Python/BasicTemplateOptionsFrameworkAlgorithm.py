@@ -77,7 +77,7 @@ class ConstantOptionContractAlphaModel(ConstantAlphaModel):
 class SingleSharePortfolioConstructionModel(PortfolioConstructionModel):
     '''Portfolio construction model that sets target quantities to 1 for up insights and -1 for down insights'''
     def CreateTargets(self, algorithm, insights):
-        targets = []
-        for insight in insights:
-            targets.append(PortfolioTarget(insight.Symbol, insight.Direction))
-        return targets
+        return [
+            PortfolioTarget(insight.Symbol, insight.Direction)
+            for insight in insights
+        ]

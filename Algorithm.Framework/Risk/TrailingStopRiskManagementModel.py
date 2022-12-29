@@ -21,14 +21,14 @@ class TrailingStopRiskManagementModel(RiskManagementModel):
         Args:
             maximumDrawdownPercent: The maximum percentage drawdown allowed for algorithm portfolio compared with the highest unrealized profit, defaults to 5% drawdown'''
         self.maximumDrawdownPercent = abs(maximumDrawdownPercent)
-        self.trailingAbsoluteHoldingsState = dict()
+        self.trailingAbsoluteHoldingsState = {}
 
     def ManageRisk(self, algorithm, targets):
         '''Manages the algorithm's risk at each time step
         Args:
             algorithm: The algorithm instance
             targets: The current portfolio targets to be assessed for risk'''
-        riskAdjustedTargets = list()
+        riskAdjustedTargets = []
 
         for kvp in algorithm.Securities:
             symbol = kvp.Key
@@ -44,7 +44,10 @@ class TrailingStopRiskManagementModel(RiskManagementModel):
             trailingAbsoluteHoldingsState = self.trailingAbsoluteHoldingsState.get(symbol)
 
             # Add newly invested security (if doesn't exist) or reset holdings state (if position changed)
-            if trailingAbsoluteHoldingsState == None or position != trailingAbsoluteHoldingsState.position:
+            if (
+                trailingAbsoluteHoldingsState is None
+                or position != trailingAbsoluteHoldingsState.position
+            ):
                 self.trailingAbsoluteHoldingsState[symbol] = trailingAbsoluteHoldingsState = self.HoldingsState(position, security.Holdings.AbsoluteHoldingsCost)
 
             trailingAbsoluteHoldingsValue = trailingAbsoluteHoldingsState.absoluteHoldingsValue

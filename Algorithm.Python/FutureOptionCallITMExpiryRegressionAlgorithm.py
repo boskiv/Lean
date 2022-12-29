@@ -110,7 +110,7 @@ class FutureOptionCallITMExpiryRegressionAlgorithm(QCAlgorithm):
             raise AssertionError(f"No holdings were created for option contract {option.Symbol}")
 
         if orderEvent.Direction == OrderDirection.Sell and option.Holdings.Quantity != 0:
-            raise AssertionError(f"Holdings were found after a filled option exercise")
+            raise AssertionError("Holdings were found after a filled option exercise")
 
         if "Exercise" in orderEvent.Message and option.Holdings.Quantity != 0:
             raise AssertionError(f"Holdings were found after exercising option contract {option.Symbol}")

@@ -132,7 +132,6 @@ class IndicatorWarmupAlgorithm(QCAlgorithm):
             if not self.Security.Invested: return
 
             limit = 0
-            qty = self.Security.Holdings.Quantity
             exitTolerance = 1 + 2 * self.PercentTolerance
             if self.Security.Holdings.IsLong and self.Close.Current.Value * exitTolerance < self.EMA.Current.Value:
                 limit = self.Security.High
@@ -140,22 +139,22 @@ class IndicatorWarmupAlgorithm(QCAlgorithm):
                 limit = self.Security.Low
 
             if limit != 0:
+                qty = self.Security.Holdings.Quantity
                 ticket = self.__algorithm.LimitOrder(self.Symbol, -qty, limit, "TryExit at: {0}".format(limit))
 
 
         def OnOrderEvent(self, fill):
             if fill.Status != OrderStatus.Filled: return
 
-            qty = self.Security.Holdings.Quantity
-
             # if we just finished entering, place a stop loss as well
             if self.Security.Invested:
                 stop = fill.FillPrice*(1 - self.PercentGlobalStopLoss) if self.Security.Holdings.IsLong \
-                    else fill.FillPrice*(1 + self.PercentGlobalStopLoss)
+                            else fill.FillPrice*(1 + self.PercentGlobalStopLoss)
+
+                qty = self.Security.Holdings.Quantity
 
                 self.__currentStopLoss = self.__algorithm.StopMarketOrder(self.Symbol, -qty, stop, "StopLoss at: {0}".format(stop))
 
-            # check for an exit, cancel the stop loss
             elif (self.__currentStopLoss is not None and self.__currentStopLoss.Status is not OrderStatus.Filled):
                 # cancel our current stop loss
                 self.__currentStopLoss.Cancel("Exited position")

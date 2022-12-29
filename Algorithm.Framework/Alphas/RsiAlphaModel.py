@@ -31,7 +31,7 @@ class RsiAlphaModel(AlphaModel):
         self.symbolDataBySymbol ={}
 
         resolutionString = Extensions.GetEnumString(resolution, Resolution)
-        self.Name = '{}({},{})'.format(self.__class__.__name__, period, resolutionString)
+        self.Name = f'{self.__class__.__name__}({period},{resolutionString})'
 
     def Update(self, algorithm, data):
         '''Updates this alpha model with the latest data from the algorithm.
@@ -65,9 +65,7 @@ class RsiAlphaModel(AlphaModel):
             algorithm: The algorithm instance that experienced the change in securities
             changes: The security additions and removals from the algorithm'''
 
-        # clean up data for removed securities
-        symbols = [ x.Symbol for x in changes.RemovedSecurities ]
-        if len(symbols) > 0:
+        if symbols := [x.Symbol for x in changes.RemovedSecurities]:
             for subscription in algorithm.SubscriptionManager.Subscriptions:
                 if subscription.Symbol in symbols:
                     self.symbolDataBySymbol.pop(subscription.Symbol, None)
@@ -76,7 +74,7 @@ class RsiAlphaModel(AlphaModel):
         # initialize data for added securities
 
         addedSymbols = [ x.Symbol for x in changes.AddedSecurities if x.Symbol not in self.symbolDataBySymbol]
-        if len(addedSymbols) == 0: return
+        if not addedSymbols: return
 
         history = algorithm.History(addedSymbols, self.period, self.resolution)
 
@@ -103,12 +101,10 @@ class RsiAlphaModel(AlphaModel):
             return State.TrippedHigh
         if rsi.Current.Value < 30:
             return State.TrippedLow
-        if previous == State.TrippedLow:
-            if rsi.Current.Value > 35:
-                return State.Middle
-        if previous == State.TrippedHigh:
-            if rsi.Current.Value < 65:
-                return State.Middle
+        if previous == State.TrippedLow and rsi.Current.Value > 35:
+            return State.Middle
+        if previous == State.TrippedHigh and rsi.Current.Value < 65:
+            return State.Middle
 
         return previous
 

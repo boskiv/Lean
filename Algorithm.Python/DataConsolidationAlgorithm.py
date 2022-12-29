@@ -123,13 +123,14 @@ class DataConsolidationAlgorithm(QCAlgorithm):
         consolidator produces a new 30 minute bar, this function will be called automatically. The 'sender' parameter
          will be the instance of the IDataConsolidator that invoked the event, but you'll almost never need that!'''
 
-        if self.__last is not None and consolidated.Close > self.__last.Close:
-            self.Log(f"{consolidated.Time} >> SPY >> LONG  >> 100 >> {self.Portfolio['SPY'].Quantity}")
-            self.Order("SPY", 100)
+        if self.__last is not None:
+            if consolidated.Close > self.__last.Close:
+                self.Log(f"{consolidated.Time} >> SPY >> LONG  >> 100 >> {self.Portfolio['SPY'].Quantity}")
+                self.Order("SPY", 100)
 
-        elif self.__last is not None and consolidated.Close < self.__last.Close:
-            self.Log(f"{consolidated.Time} >> SPY >> SHORT  >> 100 >> {self.Portfolio['SPY'].Quantity}")
-            self.Order("SPY", -100)
+            elif consolidated.Close < self.__last.Close:
+                self.Log(f"{consolidated.Time} >> SPY >> SHORT  >> 100 >> {self.Portfolio['SPY'].Quantity}")
+                self.Order("SPY", -100)
 
         self.__last = consolidated
 

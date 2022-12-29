@@ -35,13 +35,13 @@ class BasicTemplateFuturesConsolidationAlgorithm(QCAlgorithm):
         futureSP500.SetFilter(0, 182)
         # future.SetFilter(timedelta(0), timedelta(182))
 
-        self.consolidators = dict()
+        self.consolidators = {}
 
     def OnData(self,slice):
         pass
 
     def OnDataConsolidated(self, sender, quoteBar):
-        self.Log("OnDataConsolidated called on " + str(self.Time))
+        self.Log(f"OnDataConsolidated called on {str(self.Time)}")
         self.Log(str(quoteBar))
         
     def OnSecuritiesChanged(self, changes):

@@ -50,9 +50,8 @@ class CustomDataPropertiesRegressionAlgorithm(QCAlgorithm):
 
 
     def OnData(self, data):
-        if not self.Portfolio.Invested:
-            if data['BTC'].Close != 0 :
-                self.Order('BTC', self.Portfolio.MarginRemaining/abs(data['BTC'].Close + 1))
+        if not self.Portfolio.Invested and data['BTC'].Close != 0:
+            self.Order('BTC', self.Portfolio.MarginRemaining/abs(data['BTC'].Close + 1))
 
     def OnEndOfAlgorithm(self):
         #Reset our Symbol property value, for testing purposes.

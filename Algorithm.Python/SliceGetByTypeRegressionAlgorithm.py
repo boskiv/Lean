@@ -37,14 +37,12 @@ class SliceGetByTypeRegressionAlgorithm(QCAlgorithm):
 
 class TestAlphaModel(AlphaModel):
     def Update(self, algorithm, data):
-        insights = []
-
         if "SPY" in data:
             tb = data.Get(TradeBar)["SPY"]
             global TradeFlag
             TradeFlag = True
 
-        return insights
+        return []
 
     def OnSecuritiesChanged(self, algorithm, changes):
         return

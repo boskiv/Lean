@@ -38,9 +38,7 @@ class AddOptionContractFromUniverseRegressionAlgorithm(QCAlgorithm):
         self.AddUniverse(self.Selector, self.Selector)
 
     def Selector(self, fundamental):
-        if self.Time <= datetime(2014, 6, 5):
-            return  [ self._twx ]
-        return [ self._aapl ]
+        return [ self._twx ] if self.Time <= datetime(2014, 6, 5) else [ self._aapl ]
 
     def OnData(self, data):
         '''OnData event is the primary entry point for your algorithm. Each new data point will be pumped in here.
@@ -58,7 +56,7 @@ class AddOptionContractFromUniverseRegressionAlgorithm(QCAlgorithm):
 
     def OnSecuritiesChanged(self, changes):
         # keep track of all removed and added securities
-        if self._securityChanges == None:
+        if self._securityChanges is None:
             self._securityChanges = changes
         else:
             self._securityChanges.op_Addition(self._securityChanges, changes)
@@ -75,5 +73,5 @@ class AddOptionContractFromUniverseRegressionAlgorithm(QCAlgorithm):
             self.AddOptionContract(option)
 
             # just keep the first we got
-            if self._option == None:
+            if self._option is None:
                 self._option = option
