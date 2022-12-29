@@ -39,10 +39,10 @@ def test_spot_price_securities(security_id, ticker, security_type, market, date_
     assert symbol.Symbol == ticker
     assert symbol.SecurityType == security_type
     assert symbol.Market == market
-    if symbol.SecurityType == 'Equity' or symbol.SecurityType == 'Future':
+    if symbol.SecurityType in ['Equity', 'Future']:
         assert symbol.Date == datetime(*date_arg)
     else:
-        assert symbol.Date == None
+        assert symbol.Date is None
 
 @pytest.mark.parametrize(*option_security_cases)
 def test_option_securities(security_id, ticker, security_type, market, date_arg, underlying_id,

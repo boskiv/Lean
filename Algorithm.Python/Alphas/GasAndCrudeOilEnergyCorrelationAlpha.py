@@ -98,11 +98,10 @@ class PairsAlphaModel:
         return []
 
     def CorrelationPairsSelection(self):
-        ## Get returns for each natural gas/oil ETF
-        daily_return = {}
-        for symbol, symbolData in self.symbolDataBySymbol.items():
-            daily_return[symbol] = symbolData.DailyReturnArray
-
+        daily_return = {
+            symbol: symbolData.DailyReturnArray
+            for symbol, symbolData in self.symbolDataBySymbol.items()
+        }
         ## Estimate coefficients of different correlation measures
         tau = pd.DataFrame.from_dict(daily_return).corr(method='kendall')
 
@@ -152,7 +151,7 @@ class SymbolData:
     def __init__(self, symbol, dailyLookback, lookback, resolution, algorithm):
         self.Symbol = symbol
 
-        self.dailyReturn = RateOfChangePercent(f'{symbol}.DailyROCP({1})', 1)
+        self.dailyReturn = RateOfChangePercent(f'{symbol}.DailyROCP(1)', 1)
         self.dailyConsolidator = algorithm.ResolveConsolidator(symbol, Resolution.Daily)
         self.dailyReturnHistory = RollingWindow[IndicatorDataPoint](dailyLookback)
 
@@ -207,7 +206,10 @@ class CustomExecutionModel(ExecutionModel):
         self.targetsCollection.AddRange(targets)
 
         for target in self.targetsCollection.OrderByMarginImpact(algorithm):
-            open_quantity = sum([x.Quantity for x in algorithm.Transactions.GetOpenOrders(target.Symbol)])
+            open_quantity = sum(
+                x.Quantity
+                for x in algorithm.Transactions.GetOpenOrders(target.Symbol)
+            )
             existing = algorithm.Securities[target.Symbol].Holdings.Quantity + open_quantity
             quantity = target.Quantity - existing
             ## Liquidate positions in Crude Oil ETF that is no longer part of the highest-correlation pair

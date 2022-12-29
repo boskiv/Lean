@@ -27,7 +27,7 @@ class RiskParityPortfolioOptimizer:
         Args:
             minimum_weight(float): The lower bounds on portfolio weights
             maximum_weight(float): The upper bounds on portfolio weights'''
-        self.minimum_weight = minimum_weight if minimum_weight >= 1e-05 else 1e-05
+        self.minimum_weight = max(minimum_weight, 1e-05)
         self.maximum_weight = maximum_weight if maximum_weight >= minimum_weight else minimum_weight
 
     def Optimize(self, historicalReturns, budget = None, covariance = None):

@@ -40,6 +40,3 @@ class TrainingExampleAlgorithm(QCAlgorithm):
         self.Log(f'Start training at {self.Time}')
         # Use the historical data to train the machine learning model
         history = self.History(["SPY"], 200, Resolution.Daily)
-
-        # ML code:
-        pass

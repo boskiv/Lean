@@ -51,6 +51,6 @@ class HistoryWithDifferentDataMappingModeRegressionAlgorithm(QCAlgorithm):
 
         # Check that, for each history result, close prices at each time are different for these securities (AAPL and ES)
         for j in range(historyResults[0].size):
-            closePrices = set(historyResults[i][j] for i in range(len(historyResults)))
+            closePrices = {historyResults[i][j] for i in range(len(historyResults))}
             if len(closePrices) != len(dataNormalizationModes):
                 raise Exception(f"History results for {symbol} have different close prices at the same time")

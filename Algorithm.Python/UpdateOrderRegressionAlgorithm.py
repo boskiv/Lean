@@ -68,7 +68,11 @@ class UpdateOrderRegressionAlgorithm(QCAlgorithm):
             limitPrice = (1 - self.limit_percentage)*stopPrice if isLong else (1 + self.limit_percentage)*stopPrice
 
             if orderType == OrderType.Limit:
-                limitPrice = (1 + self.limit_percentage)*data["SPY"].High if not isLong else (1 - self.limit_percentage)*data["SPY"].Low
+                limitPrice = (
+                    (1 - self.limit_percentage) * data["SPY"].Low
+                    if isLong
+                    else (1 + self.limit_percentage) * data["SPY"].High
+                )
 
             request = SubmitOrderRequest(orderType, self.security.Symbol.SecurityType, "SPY", self.quantity, stopPrice, limitPrice, self.UtcTime, str(orderType))
             ticket = self.Transactions.AddOrder(request)
@@ -93,11 +97,10 @@ class UpdateOrderRegressionAlgorithm(QCAlgorithm):
                     updateOrderFields.StopPrice = self.security.Price*(1 + copysign(self.stop_percentage_delta, ticket.Quantity))
                     updateOrderFields.Tag = "Change prices: {0}".format(self.Time.day)
                     ticket.Update(updateOrderFields)
-            else:
-                if len(ticket.UpdateRequests) == 2 and ticket.Status is not OrderStatus.Filled:
-                    self.Log("TICKET:: {0}".format(ticket))
-                    ticket.Cancel("{0} and is still open!".format(self.Time.day))
-                    self.Log("CANCELLED:: {0}".format(ticket.CancelRequest))
+            elif len(ticket.UpdateRequests) == 2 and ticket.Status is not OrderStatus.Filled:
+                self.Log("TICKET:: {0}".format(ticket))
+                ticket.Cancel("{0} and is still open!".format(self.Time.day))
+                self.Log("CANCELLED:: {0}".format(ticket.CancelRequest))
 
 
     def OnOrderEvent(self, orderEvent):
@@ -109,11 +112,22 @@ class UpdateOrderRegressionAlgorithm(QCAlgorithm):
             raise ValueError("Expected canceled order CanceledTime to equal canceled order event time.")
 
         #fills update LastFillTime
-        if (order.Status == OrderStatus.Filled or order.Status == OrderStatus.PartiallyFilled) and order.LastFillTime != orderEvent.UtcTime:
+        if (
+            order.Status in [OrderStatus.Filled, OrderStatus.PartiallyFilled]
+            and order.LastFillTime != orderEvent.UtcTime
+        ):
             raise ValueError("Expected filled order LastFillTime to equal fill order event time.")
 
         # check the ticket to see if the update was successfully processed
-        if len([ur for ur in ticket.UpdateRequests if ur.Response is not None and ur.Response.IsSuccess]) > 0 and order.CreatedTime != self.UtcTime and order.LastUpdateTime is None:
+        if (
+            [
+                ur
+                for ur in ticket.UpdateRequests
+                if ur.Response is not None and ur.Response.IsSuccess
+            ]
+            and order.CreatedTime != self.UtcTime
+            and order.LastUpdateTime is None
+        ):
             raise ValueError("Expected updated order LastUpdateTime to equal submitted update order event time")
 
         if orderEvent.Status == OrderStatus.Filled:

@@ -60,13 +60,13 @@ class ETFConstituentUniverseFilterFunctionRegressionAlgorithm(QCAlgorithm):
 
                 self.mappingEventOccurred = True
 
-        if self.qqq in data and len([i for i in data.Keys]) == 1:
+        if self.qqq in data and len(list(data.Keys)) == 1:
             return
 
         if self.UtcTime.date() not in self.constituentDataEncountered:
             self.constituentDataEncountered[self.UtcTime.date()] = False
-        
-        if len([i for i in data.Keys if i in self.constituentSymbols]) != 0:
+
+        if [i for i in data.Keys if i in self.constituentSymbols]:
             self.constituentDataEncountered[self.UtcTime.date()] = True
 
         if not self.Portfolio.Invested:

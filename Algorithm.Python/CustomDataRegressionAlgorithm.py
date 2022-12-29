@@ -37,9 +37,8 @@ class CustomDataRegressionAlgorithm(QCAlgorithm):
         self._warmedUpChecked = False
 
     def OnData(self, data):
-        if not self.Portfolio.Invested:
-            if data['BTC'].Close != 0 :
-                self.Order('BTC', self.Portfolio.MarginRemaining/abs(data['BTC'].Close + 1))
+        if not self.Portfolio.Invested and data['BTC'].Close != 0:
+            self.Order('BTC', self.Portfolio.MarginRemaining/abs(data['BTC'].Close + 1))
 
     def OnSecuritiesChanged(self, changes):
         changes.FilterCustomSecurities = False

@@ -39,7 +39,7 @@ class CoarseFineOptionUniverseChainRegressionAlgorithm(QCAlgorithm):
     def OptionFilterFunction(self, universe):
         universe.IncludeWeeklys().FrontMonth()
 
-        contracts = list()
+        contracts = []
         for symbol in universe:
             if len(contracts) == 5:
                 break
@@ -47,17 +47,15 @@ class CoarseFineOptionUniverseChainRegressionAlgorithm(QCAlgorithm):
         return universe.Contracts(contracts)
 
     def CoarseSelectionFunction(self, coarse):
-        if self.Time <= datetime(2014,6,5):
-            return [ self._twx ]
-        return [ self._aapl ]
+        return [ self._twx ] if self.Time <= datetime(2014,6,5) else [ self._aapl ]
 
     def FineSelectionFunction(self, fine):
-        if self.Time <= datetime(2014,6,5):
-            return [ self._twx ]
-        return [ self._aapl ]
+        return [ self._twx ] if self.Time <= datetime(2014,6,5) else [ self._aapl ]
 
     def OnData(self, data):
-        if self._changes == None or any(security.Price == 0 for security in self._changes.AddedSecurities):
+        if self._changes is None or any(
+            security.Price == 0 for security in self._changes.AddedSecurities
+        ):
             return
 
         # liquidate removed securities
@@ -68,18 +66,17 @@ class CoarseFineOptionUniverseChainRegressionAlgorithm(QCAlgorithm):
         for security in self._changes.AddedSecurities:
             if not security.Symbol.HasUnderlying:
                 self._lastEquityAdded = security.Symbol
-            else:
-                # options added should all match prev added security
-                if security.Symbol.Underlying != self._lastEquityAdded:
-                    raise ValueError(f"Unexpected symbol added {security.Symbol}")
+            elif security.Symbol.Underlying == self._lastEquityAdded:
                 self._optionCount += 1
 
+            else:
+                raise ValueError(f"Unexpected symbol added {security.Symbol}")
             self.SetHoldings(security.Symbol, 0.05)
         self._changes = None
 
     # this event fires whenever we have changes to our universe
     def OnSecuritiesChanged(self, changes):
-        if self._changes == None:
+        if self._changes is None:
             self._changes = changes
             return
         self._changes = self._changes.op_Addition(self._changes, changes)

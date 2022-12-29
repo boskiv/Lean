@@ -37,15 +37,15 @@ class MultipleSymbolConsolidationAlgorithm(QCAlgorithm):
         EquitySymbols = ["AAPL","SPY","IBM"]
         # Contains all of our forex symbols
         ForexSymbols =["EURUSD", "USDJPY", "EURGBP", "EURCHF", "USDCAD", "USDCHF", "AUDUSD","NZDUSD"]
-        
+
         self.SetStartDate(2014, 12, 1)
         self.SetEndDate(2015, 2, 1)
-        
+
         # initialize our equity data
         for symbol in EquitySymbols:
             equity = self.AddEquity(symbol)
             self.Data[symbol] = SymbolData(equity.Symbol, BarPeriod, RollingWindowSize)
-        
+
         # initialize our forex data 
         for symbol in ForexSymbols:
             forex = self.AddForex(symbol)
@@ -54,7 +54,12 @@ class MultipleSymbolConsolidationAlgorithm(QCAlgorithm):
         # loop through all our symbols and request data subscriptions and initialize indicator
         for symbol, symbolData in self.Data.items():
             # define the indicator
-            symbolData.SMA = SimpleMovingAverage(self.CreateIndicatorName(symbol, "SMA" + str(SimpleMovingAveragePeriod), Resolution.Minute), SimpleMovingAveragePeriod)
+            symbolData.SMA = SimpleMovingAverage(
+                self.CreateIndicatorName(
+                    symbol, f"SMA{SimpleMovingAveragePeriod}", Resolution.Minute
+                ),
+                SimpleMovingAveragePeriod,
+            )
             # define a consolidator to consolidate data for this symbol on the requested period
             consolidator = TradeBarConsolidator(BarPeriod) if symbolData.Symbol.SecurityType == SecurityType.Equity else QuoteBarConsolidator(BarPeriod)
             # write up our consolidator to update the indicator
@@ -75,19 +80,19 @@ class MultipleSymbolConsolidationAlgorithm(QCAlgorithm):
         for symbol in self.Data.keys():
             symbolData = self.Data[symbol]
             # this check proves that this symbol was JUST updated prior to this OnData function being called
-            if symbolData.IsReady() and symbolData.WasJustUpdated(self.Time):
-                if not self.Portfolio[symbol].Invested:
-                    self.MarketOrder(symbol, 1)
+            if (
+                symbolData.IsReady()
+                and symbolData.WasJustUpdated(self.Time)
+                and not self.Portfolio[symbol].Invested
+            ):
+                self.MarketOrder(symbol, 1)
 
     # End of a trading day event handler. This method is called at the end of the algorithm day (or multiple times if trading multiple assets).
     # Method is called 10 minutes before closing to allow user to close out position.
     def OnEndOfDay(self, symbol):
         
-        i = 0
-        for symbol in sorted(self.Data.keys()):
+        for i, symbol in enumerate(sorted(self.Data.keys()), start=1):
             symbolData = self.Data[symbol]
-            # we have too many symbols to plot them all, so plot every other
-            i += 1
             if symbolData.IsReady() and i%2 == 0:
                 self.Plot(symbol, symbol, symbolData.SMA.Current.Value)
     

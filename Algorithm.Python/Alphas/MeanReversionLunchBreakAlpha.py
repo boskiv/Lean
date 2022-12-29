@@ -68,10 +68,10 @@ class MeanReversionLunchBreakAlphaModel(AlphaModel):
     for insights accordingly.'''
 
     def __init__(self, *args, **kwargs):
-        lookback = kwargs['lookback'] if 'lookback' in kwargs else 1
+        lookback = kwargs.get('lookback', 1)
         self.resolution = Resolution.Hour
         self.predictionInterval = Time.Multiply(Extensions.ToTimeSpan(self.resolution), lookback)
-        self.symbolDataBySymbol = dict()
+        self.symbolDataBySymbol = {}
 
     def Update(self, algorithm, data):
 

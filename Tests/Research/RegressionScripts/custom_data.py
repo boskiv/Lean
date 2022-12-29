@@ -17,11 +17,11 @@ import decimal
 
 class CustomPythonData(PythonData):
     def GetSource(self, config, date, isLive):
-        source = Globals.DataFolder + "/equity/usa/daily/ibm.zip"
+        source = f"{Globals.DataFolder}/equity/usa/daily/ibm.zip"
         return SubscriptionDataSource(source, SubscriptionTransportMedium.LocalFile, FileFormat.Csv)
 
     def Reader(self, config, line, date, isLive):
-        if line == None:
+        if line is None:
             return None
 
         customPythonData = CustomPythonData()

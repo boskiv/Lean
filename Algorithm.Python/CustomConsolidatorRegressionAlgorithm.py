@@ -56,22 +56,25 @@ class CustomConsolidatorRegressionAlgorithm(QCAlgorithm):
         '''
         
         consolidatorInfo = str(type(sender)) + str(sender.Period)
-       
-        self.Debug("Bar Type: " + consolidatorInfo)
-        self.Debug("Bar Range: " + bar.Time.ctime() + " - " + bar.EndTime.ctime())
-        self.Debug("Bar value: " + str(bar.Close))
+
+        self.Debug(f"Bar Type: {consolidatorInfo}")
+        self.Debug(f"Bar Range: {bar.Time.ctime()} - {bar.EndTime.ctime()}")
+        self.Debug(f"Bar value: {str(bar.Close)}")
     
     def OnData(self, slice):
         test = slice.get_Values()
 
-        if self.customConsolidator.Consolidated and slice.ContainsKey("SPY"):
+        if (
+            self.customConsolidator.Consolidated
+            and slice.ContainsKey("SPY")
+            and self.movingAverage.IsReady
+        ):
             data = slice['SPY']
-            
-            if self.movingAverage.IsReady:
-                if data.Value > self.movingAverage.Current.Price:
-                    self.SetHoldings("SPY", .5)
-                else :
-                    self.SetHoldings("SPY", 0)
+
+            if data.Value > self.movingAverage.Current.Price:
+                self.SetHoldings("SPY", .5)
+            else:
+                self.SetHoldings("SPY", 0)
             
 
 
@@ -154,12 +157,14 @@ class CustomQuoteBarConsolidator(PythonConsolidator):
     def Scan(self, time):
         '''Scans this consolidator to see if it should emit a bar due to time passing'''
 
-        if self.Period is not None and self.WorkingData is not None:
-            if time - self.WorkingData.Time >= self.Period:
+        if (
+            self.Period is not None
+            and self.WorkingData is not None
+            and time - self.WorkingData.Time >= self.Period
+        ):
+            #Trigger the event handler with a copy of self and the data
+            self.OnDataConsolidated(self, self.WorkingData)
 
-                #Trigger the event handler with a copy of self and the data
-                self.OnDataConsolidated(self, self.WorkingData)
-
-                #Set the most recent consolidated piece of data and then clear the workingData
-                self.Consolidated = self.WorkingData
-                self.WorkingData = None
+            #Set the most recent consolidated piece of data and then clear the workingData
+            self.Consolidated = self.WorkingData
+            self.WorkingData = None

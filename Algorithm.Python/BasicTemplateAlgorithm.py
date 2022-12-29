@@ -31,7 +31,7 @@ class BasicTemplateAlgorithm(QCAlgorithm):
         self.SetCash(100000)           #Set Strategy Cash
         # Find more symbols here: http://quantconnect.com/data
         self.AddEquity("SPY", Resolution.Minute)
-        self.Debug("numpy test >>> print numpy.pi: " + str(np.pi))
+        self.Debug(f"numpy test >>> print numpy.pi: {str(np.pi)}")
 
     def OnData(self, data):
         '''OnData event is the primary entry point for your algorithm. Each new data point will be pumped in here.

@@ -86,7 +86,7 @@ class BlackLittermanOptimizationPortfolioConstructionModel(PortfolioConstruction
         # Get view vectors
         P, Q = self.get_views(lastActiveInsights)
         if P is not None:
-            returns = dict()
+            returns = {}
             # Updates the BlackLittermanSymbolData with insights
             # Create a dictionary keyed by the symbols in the insights with an pandas.Series as value to create a data frame
             for insight in lastActiveInsights:
@@ -128,8 +128,13 @@ class BlackLittermanOptimizationPortfolioConstructionModel(PortfolioConstruction
         # Get the last generated active insight for each symbol
         lastActiveInsights = []
         for sourceModel, f in groupby(sorted(activeInsights, key = lambda ff: ff.SourceModel), lambda fff: fff.SourceModel):
-            for symbol, g in groupby(sorted(list(f), key = lambda gg: gg.Symbol), lambda ggg: ggg.Symbol):
-                lastActiveInsights.append(sorted(g, key = lambda x: x.GeneratedTimeUtc)[-1])
+            lastActiveInsights.extend(
+                sorted(g, key=lambda x: x.GeneratedTimeUtc)[-1]
+                for symbol, g in groupby(
+                    sorted(list(f), key=lambda gg: gg.Symbol),
+                    lambda ggg: ggg.Symbol,
+                )
+            )
         return lastActiveInsights
 
     def OnSecuritiesChanged(self, algorithm, changes):
@@ -229,8 +234,8 @@ class BlackLittermanOptimizationPortfolioConstructionModel(PortfolioConstruction
         try:
             P = {}
             Q = {}
-            symbols = set(insight.Symbol for insight in insights)
-            
+            symbols = {insight.Symbol for insight in insights}
+
             for model, group in groupby(insights, lambda x: x.SourceModel):
                 group = list(group)
 
@@ -249,7 +254,7 @@ class BlackLittermanOptimizationPortfolioConstructionModel(PortfolioConstruction
                 Q[model] = q
 
                 # generate the link matrix of views: P
-                P[model] = dict()
+                P[model] = {}
                 for insight in group:
                     value = insight.Direction * np.abs(insight.Magnitude)
                     P[model][insight.Symbol] = value / q

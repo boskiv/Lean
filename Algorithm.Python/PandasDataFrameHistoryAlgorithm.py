@@ -44,7 +44,7 @@ class PandasDataFrameHistoryAlgorithm(QCAlgorithm):
             return Universe.Unchanged
 
         selected = [x.Symbol for x in coarse if x.Symbol.Value in ["AAA", "AIG", "BAC"]]
-        if len(selected) == 0:
+        if not selected:
             return Universe.Unchanged
 
         universeHistory = self.History(selected, 10, Resolution.Daily)
@@ -105,7 +105,7 @@ class PandasDataFrameHistoryAlgorithm(QCAlgorithm):
         try:
 
             # str(Symbol.ID)
-            self.AssertHistoryCount(f"df.iloc[0]", df.iloc[0], len(df.columns))
+            self.AssertHistoryCount("df.iloc[0]", df.iloc[0], len(df.columns))
             self.AssertHistoryCount(f"df.loc[str({symbol.ID})]", df.loc[str(symbol.ID)], expected)
             self.AssertHistoryCount(f"df.xs(str({symbol.ID}))", df.xs(str(symbol.ID)), expected)
             self.AssertHistoryCount(f"df.at[(str({symbol.ID}),), '{column}']", list(df.at[(str(symbol.ID),), column]), expected)
@@ -126,7 +126,7 @@ class PandasDataFrameHistoryAlgorithm(QCAlgorithm):
                 return
             self.AssertHistoryCount(f"df.loc[{ticker}]", df.loc[ticker], expected)
             self.AssertHistoryCount(f"df.xs({ticker})", df.xs(ticker), expected)
-            self.AssertHistoryCount(f"df.at[(ticker,), '{column}']", list(df.at[(ticker,), column]), expected)        
+            self.AssertHistoryCount(f"df.at[(ticker,), '{column}']", list(df.at[(ticker,), column]), expected)
             self.AssertHistoryCount(f"df2.loc[{ticker}]", df2.loc[ticker], len(df2.columns))
             self.AssertHistoryCount(f"df3[{ticker}]", df3[ticker], expected)
             self.AssertHistoryCount(f"df3.get({ticker})", df3.get(ticker), expected)

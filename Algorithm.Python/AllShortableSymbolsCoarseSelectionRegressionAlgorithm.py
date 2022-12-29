@@ -65,7 +65,7 @@ class AllShortableSymbolsCoarseSelectionRegressionAlgorithm(QCAlgorithm):
             return
 
         for symbol in sorted(self.ActiveSecurities.Keys, key=lambda x: x.ID.Symbol):
-            if not symbol in self.Portfolio or not self.Portfolio[symbol].Invested:
+            if symbol not in self.Portfolio or not self.Portfolio[symbol].Invested:
                 if not self.Shortable(symbol):
                     raise Exception(f"Expected {symbol} to be shortable on {self.Time}")
 
@@ -83,7 +83,7 @@ class AllShortableSymbolsCoarseSelectionRegressionAlgorithm(QCAlgorithm):
             gme = Symbol.Create("GME", SecurityType.Equity, Market.USA)
             if gme not in shortableSymbols:
                 raise Exception("Expected unmapped GME in shortable symbols list on 2014-03-27")
-            if len([x.Symbol.Value for x in coarse if x.Symbol.Value == "GME"]) == 0:
+            if not [x.Symbol.Value for x in coarse if x.Symbol.Value == "GME"]:
                 raise Exception("Expected mapped GME in coarse symbols on 2014-03-27")
 
             expectedMissing = 1

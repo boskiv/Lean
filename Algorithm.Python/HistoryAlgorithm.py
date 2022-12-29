@@ -112,15 +112,8 @@ class HistoryAlgorithm(QCAlgorithm):
         # symbol and then loop over it
         singleSymbolCustom = allCustomData.loc["IBM"]
         self.AssertHistoryCount("allCustomData.loc[\"IBM\"]", singleSymbolCustom, 10)
-        for  customData in singleSymbolCustom:
-            # do something with 'IBM.CustomDataEquity' customData data
-            pass
-
         customDataSpyValues = allCustomData.loc["IBM"]["value"]
         self.AssertHistoryCount("allCustomData.loc[\"IBM\"][\"value\"]", customDataSpyValues, 10)
-        for value in customDataSpyValues:
-            # do something with 'IBM.CustomDataEquity' value data
-            pass
 
 
     def OnData(self, data):
@@ -135,7 +128,7 @@ class HistoryAlgorithm(QCAlgorithm):
     def AssertHistoryCount(self, methodCall, tradeBarHistory, expected):
         count = len(tradeBarHistory.index)
         if count != expected:
-            raise Exception("{} expected {}, but received {}".format(methodCall, expected, count))
+            raise Exception(f"{methodCall} expected {expected}, but received {count}")
 
 
 class CustomDataEquity(PythonData):
@@ -144,7 +137,7 @@ class CustomDataEquity(PythonData):
         return SubscriptionDataSource(source, SubscriptionTransportMedium.RemoteFile)
 
     def Reader(self, config, line, date, isLive):
-        if line == None:
+        if line is None:
             return None
 
         customData = CustomDataEquity()

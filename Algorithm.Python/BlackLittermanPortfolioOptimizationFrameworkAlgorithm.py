@@ -57,7 +57,7 @@ class BlackLittermanPortfolioOptimizationFrameworkAlgorithm(QCAlgorithm):
         # Drops SPY after the 8th
         last = 3 if self.Time.day > 8 else len(self.symbols)
 
-        return self.symbols[0:last]
+        return self.symbols[:last]
 
     def OnOrderEvent(self, orderEvent):
         if orderEvent.Status == OrderStatus.Filled:

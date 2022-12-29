@@ -111,7 +111,7 @@ class ContingentClaimsAnalysisAlphaModel:
 
     def __init__(self, *args, **kwargs):
         self.ProbabilityOfDefaultBySymbol = {}
-        self.default_threshold = kwargs['default_threshold'] if 'default_threshold' in kwargs else 0.25
+        self.default_threshold = kwargs.get('default_threshold', 0.25)
 
     def Update(self, algorithm, data):
         '''Updates this alpha model with the latest data from the algorithm.
@@ -122,16 +122,11 @@ class ContingentClaimsAnalysisAlphaModel:
         Returns:
             The new insights generated'''
 
-        ## Build a list to hold our insights
-        insights = []
-
-        for symbol, pod in self.ProbabilityOfDefaultBySymbol.items():
-
-            ## If Prob. of Default is greater than our set threshold, then emit an insight indicating that this asset is trending downward
-            if pod >= self.default_threshold and pod != 1.0:
-                insights.append(Insight.Price(symbol, timedelta(30), InsightDirection.Down, pod, None))
-
-        return insights
+        return [
+            Insight.Price(symbol, timedelta(30), InsightDirection.Down, pod, None)
+            for symbol, pod in self.ProbabilityOfDefaultBySymbol.items()
+            if pod >= self.default_threshold and pod != 1.0
+        ]
 
     def OnSecuritiesChanged(self, algorithm, changes):
 

@@ -42,4 +42,6 @@ class PortfolioRebalanceOnDateRulesRegressionAlgorithm(QCAlgorithm):
         if orderEvent.Status == OrderStatus.Submitted:
             self.Debug(str(orderEvent))
             if self.UtcTime.weekday() != 2:
-                raise ValueError(str(self.UtcTime) + " " + str(orderEvent.Symbol) + " " + str(self.UtcTime.weekday()))
+                raise ValueError(
+                    f"{str(self.UtcTime)} {str(orderEvent.Symbol)} {str(self.UtcTime.weekday())}"
+                )

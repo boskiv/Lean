@@ -48,20 +48,21 @@ class FuturesMomentumAlgorithm(QCAlgorithm):
 
 
     def OnData(self, slice):
-        if self._slow.IsReady and self._fast.IsReady:
-            self.IsUpTrend = self._fast.Current.Value > self._slow.Current.Value * self._tolerance
-            self.IsDownTrend = self._fast.Current.Value < self._slow.Current.Value * self._tolerance
-            if (not self.Portfolio.Invested) and self.IsUpTrend:
-                for chain in slice.FuturesChains:
-                    # find the front contract expiring no earlier than in 90 days
-                    contracts = list(filter(lambda x: x.Expiry > self.Time + timedelta(90), chain.Value))
+        if not self._slow.IsReady or not self._fast.IsReady:
+            return
+        self.IsUpTrend = self._fast.Current.Value > self._slow.Current.Value * self._tolerance
+        self.IsDownTrend = self._fast.Current.Value < self._slow.Current.Value * self._tolerance
+        if (not self.Portfolio.Invested) and self.IsUpTrend:
+            for chain in slice.FuturesChains:
+                # find the front contract expiring no earlier than in 90 days
+                contracts = list(filter(lambda x: x.Expiry > self.Time + timedelta(90), chain.Value))
                     # if there is any contract, trade the front contract
-                    if len(contracts) == 0: continue
-                    contract = sorted(contracts, key = lambda x: x.Expiry, reverse=True)[0]
-                    self.MarketOrder(contract.Symbol , 1)
+                if not contracts: continue
+                contract = sorted(contracts, key = lambda x: x.Expiry, reverse=True)[0]
+                self.MarketOrder(contract.Symbol , 1)
 
-            if self.Portfolio.Invested and self.IsDownTrend:
-                self.Liquidate()
+        if self.Portfolio.Invested and self.IsDownTrend:
+            self.Liquidate()
 
     def OnEndOfDay(self, symbol):
         if self.IsUpTrend:

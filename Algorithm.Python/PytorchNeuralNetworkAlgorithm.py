@@ -35,21 +35,21 @@ class PytorchNeuralNetworkAlgorithm(QCAlgorithm):
     def NetTrain(self):
         # Daily historical data is used to train the machine learning model
         history = self.History(self.symbols, self.lookback + 1, Resolution.Daily)
-        
+
         # dicts that store prices for training
-        self.prices_x = {} 
+        self.prices_x = {}
         self.prices_y = {}
-        
+
         # dicts that store prices for sell and buy
         self.sell_prices = {}
         self.buy_prices = {}
-        
+
         for symbol in self.symbols:
             if not history.empty:
                 # x: preditors; y: response
                 self.prices_x[symbol] = list(history.loc[symbol.Value]['open'])[:-1]
                 self.prices_y[symbol] = list(history.loc[symbol.Value]['open'])[1:]
-                
+
         for symbol in self.symbols:
             # if this symbol has historical data
             if symbol in self.prices_x:
@@ -57,16 +57,16 @@ class PytorchNeuralNetworkAlgorithm(QCAlgorithm):
                 net = Net(n_feature=1, n_hidden=10, n_output=1)     # define the network
                 optimizer = torch.optim.SGD(net.parameters(), lr=0.2)
                 loss_func = torch.nn.MSELoss()  # this is for regression mean squared loss
-                
-                for t in range(200):
+
+                for _ in range(200):
                     # Get data and do preprocessing
                     x = torch.from_numpy(np.array(self.prices_x[symbol])).float()
                     y = torch.from_numpy(np.array(self.prices_y[symbol])).float()
-                    
+
                     # unsqueeze data (see pytorch doc for details)
-                    x = x.unsqueeze(1) 
+                    x = x.unsqueeze(1)
                     y = y.unsqueeze(1)
-                
+
                     prediction = net(x)     # input x and predict based on x
 
                     loss = loss_func(prediction, y)     # must be (1. nn output, 2. target)
@@ -74,7 +74,7 @@ class PytorchNeuralNetworkAlgorithm(QCAlgorithm):
                     optimizer.zero_grad()   # clear gradients for next train
                     loss.backward()         # backpropagation, compute gradients
                     optimizer.step()        # apply gradients
-            
+
             # Follow the trend    
             self.buy_prices[symbol] = net(y)[-1] + np.std(y.data.numpy())
             self.sell_prices[symbol] = net(y)[-1] - np.std(y.data.numpy())

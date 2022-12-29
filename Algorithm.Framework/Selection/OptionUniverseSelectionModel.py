@@ -75,11 +75,11 @@ class OptionUniverseSelectionModel(UniverseSelectionModel):
         settings = self.universeSettings if self.universeSettings is not None else algorithm.UniverseSettings
         # create canonical security object, but don't duplicate if it already exists
         securities = [s for s in algorithm.Securities if s.Key == symbol]
-        if len(securities) == 0:
-            optionChain = self.CreateOptionChainSecurity(algorithm, symbol, settings)
-        else:
-            optionChain = securities[0]
-
+        optionChain = (
+            securities[0]
+            if securities
+            else self.CreateOptionChainSecurity(algorithm, symbol, settings)
+        )
         # set the option chain contract filter function
         optionChain.SetFilter(self.Filter)
 

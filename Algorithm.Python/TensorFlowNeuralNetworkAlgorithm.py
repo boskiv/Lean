@@ -35,63 +35,63 @@ class TensorFlowNeuralNetworkAlgorithm(QCAlgorithm):
         Weights = tf.Variable(tf.random_normal([in_size, out_size]))
         biases = tf.Variable(tf.zeros([1, out_size]) + 0.1)
         Wx_plus_b = tf.matmul(inputs, Weights) + biases
-        if activation_function is None:
-            outputs = Wx_plus_b
-        else:
-            outputs = activation_function(Wx_plus_b)
-        return outputs
+        return (
+            Wx_plus_b
+            if activation_function is None
+            else activation_function(Wx_plus_b)
+        )
     
     def NetTrain(self):
         # Daily historical data is used to train the machine learning model
         history = self.History(self.symbols, self.lookback + 1, Resolution.Daily)
-        
+
         # model: use prices_x to fit prices_y; key: symbol; value: according price
         self.prices_x, self.prices_y = {}, {}
-        
+
         # key: symbol; values: prices for sell or buy 
         self.sell_prices, self.buy_prices = {}, {}
-        
+
         for symbol in self.symbols:
             if not history.empty:
                 # Daily historical data is used to train the machine learning model 
                 # use open prices to predict the next days'
                 self.prices_x[symbol] = list(history.loc[symbol.Value]['open'][:-1])
                 self.prices_y[symbol] = list(history.loc[symbol.Value]['open'][1:])
-        
+
         for symbol in self.symbols:
             if symbol in self.prices_x:
                 # create numpy array
                 x_data = np.array(self.prices_x[symbol]).astype(np.float32).reshape((-1,1))
                 y_data = np.array(self.prices_y[symbol]).astype(np.float32).reshape((-1,1))
-                
+
                 # define placeholder for inputs to network
                 xs = tf.placeholder(tf.float32, [None, 1])
                 ys = tf.placeholder(tf.float32, [None, 1])
-                
+
                 # add hidden layer
                 l1 = self.add_layer(xs, 1, 10, activation_function=tf.nn.relu)
                 # add output layer
                 prediction = self.add_layer(l1, 10, 1, activation_function=None)
-                
+
                 # the error between prediciton and real data
                 loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),
                                      reduction_indices=[1]))
                 # use gradient descent and square error
                 train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
-                
+
                 # the following is precedure for tensorflow
                 sess = tf.Session()
-                
+
                 init = tf.global_variables_initializer()
                 sess.run(init)
-                
-                for i in range(200):
+
+                for _ in range(200):
                     # training
                     sess.run(train_step, feed_dict={xs: x_data, ys: y_data})
-            
+
             # predict today's price
             y_pred_final = sess.run(prediction, feed_dict = {xs: y_data})[0][-1]
-            
+
             # get sell prices and buy prices as trading signals
             self.sell_prices[symbol] = y_pred_final - np.std(y_data)
             self.buy_prices[symbol] = y_pred_final + np.std(y_data)

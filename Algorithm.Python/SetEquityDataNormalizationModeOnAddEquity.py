@@ -47,7 +47,10 @@ class SetEquityDataNormalizationModeOnAddEquity(QCAlgorithm):
 
     def CheckEquityDataNormalizationMode(self, equity, expectedNormalizationMode):
         subscriptions = [x for x in self.SubscriptionManager.Subscriptions if x.Symbol == equity.Symbol]
-        if any([x.DataNormalizationMode != expectedNormalizationMode for x in subscriptions]):
+        if any(
+            x.DataNormalizationMode != expectedNormalizationMode
+            for x in subscriptions
+        ):
             raise Exception(f"Expected {equity.Symbol} to have data normalization mode {expectedNormalizationMode} but was {subscriptions[0].DataNormalizationMode}")
 
 

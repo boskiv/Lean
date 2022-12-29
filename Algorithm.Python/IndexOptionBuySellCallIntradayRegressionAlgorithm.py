@@ -35,12 +35,21 @@ class IndexOptionBuySellCallIntradayRegressionAlgorithm(QCAlgorithm):
         spx = self.AddIndex("SPX", Resolution.Minute).Symbol
 
         # Select a index option expiring ITM, and adds it to the algorithm.
-        spxOptions = list(sorted([
-            self.AddIndexOptionContract(i, Resolution.Minute).Symbol \
-                for i in self.OptionChainProvider.GetOptionContractList(spx, self.Time)\
-                    if (i.ID.StrikePrice == 3700 or i.ID.StrikePrice == 3800) and i.ID.OptionRight == OptionRight.Call and i.ID.Date.year == 2021 and i.ID.Date.month == 1],
-            key=lambda x: x.ID.StrikePrice
-        ))
+        spxOptions = list(
+            sorted(
+                [
+                    self.AddIndexOptionContract(i, Resolution.Minute).Symbol
+                    for i in self.OptionChainProvider.GetOptionContractList(
+                        spx, self.Time
+                    )
+                    if i.ID.StrikePrice in [3700, 3800]
+                    and i.ID.OptionRight == OptionRight.Call
+                    and i.ID.Date.year == 2021
+                    and i.ID.Date.month == 1
+                ],
+                key=lambda x: x.ID.StrikePrice,
+            )
+        )
 
         expectedContract3700 = Symbol.CreateOption(
             spx,
@@ -65,7 +74,7 @@ class IndexOptionBuySellCallIntradayRegressionAlgorithm(QCAlgorithm):
 
         if spxOptions[0] != expectedContract3700:
             raise Exception(f"Contract {expectedContract3700} was not found in the chain, found instead: {spxOptions[0]}")
-        
+
         if spxOptions[1] != expectedContract3800:
             raise Exception(f"Contract {expectedContract3800} was not found in the chain, found instead: {spxOptions[1]}")
 

@@ -69,7 +69,7 @@ class ConstituentWeightedRsiAlphaModel(AlphaModel):
             constituentData = algorithm.Securities[barSymbol].Cache.GetData[ETFConstituentData]()
             algoConstituents.append(constituentData)
 
-        if len(algoConstituents) == 0 or len(data.Bars) == 0:
+        if not algoConstituents or len(data.Bars) == 0:
             # Don't do anything if we have no data we can work with
             return []
 
@@ -87,7 +87,7 @@ class ConstituentWeightedRsiAlphaModel(AlphaModel):
                 constituent = constituents[bar.Symbol]
                 self.rsiSymbolData[bar.Symbol] = SymbolData(bar.Symbol, algorithm, constituent, 7)
 
-        allReady = all([sd.rsi.IsReady for sd in self.rsiSymbolData.values()])
+        allReady = all(sd.rsi.IsReady for sd in self.rsiSymbolData.values())
         if not allReady:
             # We're still warming up the RSI indicators.
             return []
@@ -112,7 +112,7 @@ class ConstituentWeightedRsiAlphaModel(AlphaModel):
                 float(averageLoss if direction == InsightDirection.Down else averageGain),
                 weight=float(symbolData.constituent.Weight)
             ))
-        
+
         return insights
 
 

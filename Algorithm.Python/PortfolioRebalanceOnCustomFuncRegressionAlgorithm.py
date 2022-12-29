@@ -69,6 +69,7 @@ class PortfolioRebalanceOnCustomFuncRegressionAlgorithm(QCAlgorithm):
         return None
 
     def OnOrderEvent(self, orderEvent):
-        if orderEvent.Status == OrderStatus.Submitted:
-            if self.UtcTime != self.lastRebalanceTime or self.UtcTime.weekday() != 0:
-                raise ValueError(f"{self.UtcTime} {orderEvent.Symbol}")
+        if orderEvent.Status == OrderStatus.Submitted and (
+            self.UtcTime != self.lastRebalanceTime or self.UtcTime.weekday() != 0
+        ):
+            raise ValueError(f"{self.UtcTime} {orderEvent.Symbol}")

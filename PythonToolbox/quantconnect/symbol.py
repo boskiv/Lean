@@ -67,8 +67,6 @@ class Symbol:
         self.days_offset = option_style_offset * option_style_width
 
         put_call_offset = self.days_offset * self.days_width
-        put_call_width = 10
-
         self.ID = security_id
         is_option = False
 
@@ -87,12 +85,14 @@ class Symbol:
                                                            market_offset,
                                                            market_width)]
 
-        if self.SecurityType == 'Equity' or self.SecurityType == 'Option' or self.SecurityType == 'Future':
+        if self.SecurityType in ['Equity', 'Option', 'Future']:
             self.Date = self.extract_date_from_properties(properties)
         else:
             self.Date = None
 
         if is_option:
+            put_call_width = 10
+
             self.OptionRight = OPTION_RIGHTS[self.extract_from_properties(properties,
                                                                           put_call_offset,
                                                                           put_call_width)]

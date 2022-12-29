@@ -56,7 +56,7 @@ class SmaCrossUniverseSelectionAlgorithm(QCAlgorithm):
 
     def CoarseSmaSelector(self, coarse):
 
-        score = dict()
+        score = {}
         for cf in coarse:
             if not cf.HasFundamentalData:
                continue

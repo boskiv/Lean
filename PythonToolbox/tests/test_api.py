@@ -165,7 +165,7 @@ class TestApi(unittest.TestCase):
         return attempts, result
 
 def get_content(file):
-    with open('../../Algorithm.Python/' + file, 'r') as f:
+    with open(f'../../Algorithm.Python/{file}', 'r') as f:
         content = f.read()
         return content[3:]
 

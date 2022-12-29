@@ -39,7 +39,7 @@ class UncorrelatedUniverseSelectionAlphaModel(AlphaModel):
         self.numberOfStocks = numberOfStocks
 
     def Update(self, algorithm, data):
-        symbolsRet = dict()
+        symbolsRet = {}
 
         for kvp in algorithm.ActiveSecurities:
             security = kvp.Value

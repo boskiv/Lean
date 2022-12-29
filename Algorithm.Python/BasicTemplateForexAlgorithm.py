@@ -45,9 +45,9 @@ class BasicTemplateForexAlgorithm(QCAlgorithm):
 
         for data in sorted(history, key=lambda x: x.Time):
             for key in data.Keys:
-                self.Log(str(key.Value) + ": " + str(data.Time) + " > " + str(data[key].Value))
+                self.Log(f"{str(key.Value)}: {str(data.Time)} > {str(data[key].Value)}")
 
     def OnData(self, data):
         # Print to console to verify that data is coming in
         for key in data.Keys:
-            self.Log(str(key.Value) + ": " + str(data.Time) + " > " + str(data[key].Value))
+            self.Log(f"{str(key.Value)}: {str(data.Time)} > {str(data[key].Value)}")

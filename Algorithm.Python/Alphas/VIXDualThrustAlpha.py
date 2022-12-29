@@ -88,7 +88,7 @@ class DualThrustAlphaModel(AlphaModel):
         self.rangePeriod = rangePeriod
 
         # initialize with empty dict.
-        self.symbolDataBySymbol = dict()
+        self.symbolDataBySymbol = {}
 
         # time for bars we make the calculations on
         resolutionInTimeSpan =  Extensions.ToTimeSpan(resolution)
@@ -156,10 +156,10 @@ class DualThrustAlphaModel(AlphaModel):
                 self.rangeWindow.Add(consolidated)
 
                 if self.rangeWindow.IsReady:
-                    hh = max([x.High for x in self.rangeWindow])
-                    hc = max([x.Close for x in self.rangeWindow])
-                    lc = min([x.Close for x in self.rangeWindow])
-                    ll = min([x.Low for x in self.rangeWindow])
+                    hh = max(x.High for x in self.rangeWindow)
+                    hc = max(x.Close for x in self.rangeWindow)
+                    lc = min(x.Close for x in self.rangeWindow)
+                    ll = min(x.Low for x in self.rangeWindow)
 
                     range = max([hh - lc, hc - ll])
                     self.UpperLine = consolidated.Close + k1 * range

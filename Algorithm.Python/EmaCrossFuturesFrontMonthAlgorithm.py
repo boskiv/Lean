@@ -61,16 +61,14 @@ class EmaCrossFuturesFrontMonthAlgorithm(QCAlgorithm):
                 self.PlotEma()
 
     def OnSecuritiesChanged(self, changes):
-        if len(changes.RemovedSecurities) > 0:
-            # Remove the consolidator for the previous contract
-            # and reset the indicators
-            if self.symbol is not None and self.consolidator is not None:
-                self.SubscriptionManager.RemoveConsolidator(self.symbol, self.consolidator)
-                self.fast.Reset()
-                self.slow.Reset()
-            # We don't need to call Liquidate(_symbol),
-            # since its positions are liquidated because the contract has expired.
-
+        if (
+            len(changes.RemovedSecurities) > 0
+            and self.symbol is not None
+            and self.consolidator is not None
+        ):
+            self.SubscriptionManager.RemoveConsolidator(self.symbol, self.consolidator)
+            self.fast.Reset()
+            self.slow.Reset()
         # Only one security will be added: the new front contract
         self.symbol = changes.AddedSecurities[0].Symbol
 

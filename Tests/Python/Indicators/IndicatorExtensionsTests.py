@@ -63,7 +63,7 @@ class IndicatorExtensionsTests(unittest.TestCase):
 
         data = range(1, 11)
         window = list(reversed(data))[:period]
-        current = sum([ 2 * x * x for x in window ]) / float(sum(window))
+        current = sum(2 * x * x for x in window) / float(sum(window))
 
         for item in data:
             value.Update(datetime.now(), 2 * item)
@@ -213,13 +213,13 @@ class IndicatorExtensionsTests(unittest.TestCase):
         right.Update(datetime.now(), 1)
         self.assertEqual(2, composite.Current.Value)
 
-        left.Update(datetime.today(), 2)
+        left.Update(datetime.now(), 2)
         self.assertEqual(2, composite.Current.Value)
 
-        left.Update(datetime.today(), 3)
+        left.Update(datetime.now(), 3)
         self.assertEqual(2, composite.Current.Value)
 
-        right.Update(datetime.today(), 4)
+        right.Update(datetime.now(), 4)
         self.assertEqual(7, composite.Current.Value)
 
     def test_MinusSubtractsLeftAndRightAfterBothUpdated(self):
@@ -227,17 +227,17 @@ class IndicatorExtensionsTests(unittest.TestCase):
         right = Identity("right")
         composite = IndicatorExtensions.Minus(left, right)
 
-        left.Update(datetime.today(), 1)
-        right.Update(datetime.today(), 1)
+        left.Update(datetime.now(), 1)
+        right.Update(datetime.now(), 1)
         self.assertEqual(0, composite.Current.Value)
 
-        left.Update(datetime.today(), 2)
+        left.Update(datetime.now(), 2)
         self.assertEqual(0, composite.Current.Value)
 
-        left.Update(datetime.today(), 3)
+        left.Update(datetime.now(), 3)
         self.assertEqual(0, composite.Current.Value)
 
-        right.Update(datetime.today(), 4)
+        right.Update(datetime.now(), 4)
         self.assertEqual(-1, composite.Current.Value)
 
     def test_OverDivdesLeftAndRightAfterBothUpdated(self):
@@ -245,17 +245,17 @@ class IndicatorExtensionsTests(unittest.TestCase):
         right = Identity("right")
         composite = IndicatorExtensions.Over(left, right)
 
-        left.Update(datetime.today(), 1)
-        right.Update(datetime.today(), 1)
+        left.Update(datetime.now(), 1)
+        right.Update(datetime.now(), 1)
         self.assertEqual(1, composite.Current.Value)
 
-        left.Update(datetime.today(), 2)
+        left.Update(datetime.now(), 2)
         self.assertEqual(1, composite.Current.Value)
 
-        left.Update(datetime.today(), 3)
+        left.Update(datetime.now(), 3)
         self.assertEqual(1, composite.Current.Value)
 
-        right.Update(datetime.today(), 4)
+        right.Update(datetime.now(), 4)
         self.assertEqual(3.0 / 4.0, composite.Current.Value)
 
     def test_OverHandlesDivideByZero(self):
@@ -265,15 +265,15 @@ class IndicatorExtensionsTests(unittest.TestCase):
         self.updatedEventFired = False
         composite.Updated += self.composite_updated
 
-        left.Update(datetime.today(), 1)
+        left.Update(datetime.now(), 1)
         self.assertFalse(self.updatedEventFired)
-        right.Update(datetime.today(), 0)
+        right.Update(datetime.now(), 0)
         self.assertFalse(self.updatedEventFired)
 
         # submitting another update to right won't cause an update without corresponding update to left
-        right.Update(datetime.today(), 1)
+        right.Update(datetime.now(), 1)
         self.assertFalse(self.updatedEventFired)
-        left.Update(datetime.today(), 1)
+        left.Update(datetime.now(), 1)
         self.assertTrue(self.updatedEventFired)
 
     def composite_updated(self, sender, consolidated):
@@ -284,17 +284,17 @@ class IndicatorExtensionsTests(unittest.TestCase):
         right = Identity("right")
         composite = IndicatorExtensions.Times(left, right)
 
-        left.Update(datetime.today(), 1)
-        right.Update(datetime.today(), 1)
+        left.Update(datetime.now(), 1)
+        right.Update(datetime.now(), 1)
         self.assertEqual(1, composite.Current.Value)
 
-        left.Update(datetime.today(), 2)
+        left.Update(datetime.now(), 2)
         self.assertEqual(1, composite.Current.Value)
 
-        left.Update(datetime.today(), 3)
+        left.Update(datetime.now(), 3)
         self.assertEqual(1, composite.Current.Value)
 
-        right.Update(datetime.today(), 4)
+        right.Update(datetime.now(), 4)
         self.assertEqual(12, composite.Current.Value)
 
 

@@ -45,7 +45,9 @@ class ETFConstituentUniverseCompositeDelistingRegressionAlgorithmNoAddEquityETF(
         return constituentSymbols
 
     def OnData(self, data):
-        if self.UtcTime.date() > self.delistingDate and any([i != self.aapl for i in data.Keys]):
+        if self.UtcTime.date() > self.delistingDate and any(
+            i != self.aapl for i in data.Keys
+        ):
             raise Exception("Received unexpected slice in OnData(...) after universe was deselected")
 
         if not self.Portfolio.Invested:

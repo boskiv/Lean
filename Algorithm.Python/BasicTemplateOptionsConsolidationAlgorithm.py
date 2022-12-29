@@ -33,17 +33,17 @@ class BasicTemplateOptionsConsolidationAlgorithm(QCAlgorithm):
         # The following statements yield the same filtering criteria
         option.SetFilter(-2, +2, 0, 180)
         # option.SetFilter(-2, +2, timedelta(0), timedelta(180))
-        self.consolidators = dict()
+        self.consolidators = {}
     
     def OnData(self,slice):
         pass
 
     def OnQuoteBarConsolidated(self, sender, quoteBar):
-        self.Log("OnQuoteBarConsolidated called on " + str(self.Time))
+        self.Log(f"OnQuoteBarConsolidated called on {str(self.Time)}")
         self.Log(str(quoteBar))
 
     def OnTradeBarConsolidated(self, sender, tradeBar):
-        self.Log("OnTradeBarConsolidated called on " + str(self.Time))
+        self.Log(f"OnTradeBarConsolidated called on {str(self.Time)}")
         self.Log(str(tradeBar))
         
     def OnSecuritiesChanged(self, changes):

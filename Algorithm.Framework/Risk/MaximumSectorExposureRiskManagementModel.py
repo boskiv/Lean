@@ -35,7 +35,7 @@ class MaximumSectorExposureRiskManagementModel(RiskManagementModel):
 
         self.targetsCollection.AddRange(targets)
 
-        risk_targets = list()
+        risk_targets = []
 
         # Group the securities by their sector
         filtered = list(filter(lambda x: x.Value.Fundamentals is not None and x.Value.Fundamentals.HasFundamentalData, algorithm.UniverseManager.ActiveSecurities))
@@ -69,10 +69,11 @@ class MaximumSectorExposureRiskManagementModel(RiskManagementModel):
             ratio = float(sectorAbsoluteHoldingsValue) / maximumSectorExposureValue
 
             if ratio > 1:
-                for symbol, quantity in quantities.items():
-                    if quantity != 0:
-                        risk_targets.append(PortfolioTarget(symbol, float(quantity) / ratio))
-
+                risk_targets.extend(
+                    PortfolioTarget(symbol, float(quantity) / ratio)
+                    for symbol, quantity in quantities.items()
+                    if quantity != 0
+                )
         return risk_targets
 
     def OnSecuritiesChanged(self, algorithm, changes):
@@ -80,10 +81,11 @@ class MaximumSectorExposureRiskManagementModel(RiskManagementModel):
         Args:
             algorithm: The algorithm instance that experienced the change in securities
             changes: The security additions and removals from the algorithm'''
-        anyFundamentalData = any([
-            kvp.Value.Fundamentals is not None and 
-            kvp.Value.Fundamentals.HasFundamentalData for kvp in algorithm.ActiveSecurities
-            ])
+        anyFundamentalData = any(
+            kvp.Value.Fundamentals is not None
+            and kvp.Value.Fundamentals.HasFundamentalData
+            for kvp in algorithm.ActiveSecurities
+        )
 
         if not anyFundamentalData:
             raise Exception("MaximumSectorExposureRiskManagementModel.OnSecuritiesChanged: Please select a portfolio selection model that selects securities with fundamental data.")

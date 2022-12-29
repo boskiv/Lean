@@ -53,8 +53,14 @@ class LiveTradingFeaturesAlgorithm(QCAlgorithm):
 
             ##Send a notification email/SMS/web request on events:
             self.Notify.Email("myemail@gmail.com", "Test", "Test Body", "test attachment")
-            self.Notify.Sms("+11233456789", str(data.Time) + ">> Test message from live BTC server.")
-            self.Notify.Web("http://api.quantconnect.com", str(data.Time) + ">> Test data packet posted from live BTC server.")
+            self.Notify.Sms(
+                "+11233456789",
+                f"{str(data.Time)}>> Test message from live BTC server.",
+            )
+            self.Notify.Web(
+                "http://api.quantconnect.com",
+                f"{str(data.Time)}>> Test data packet posted from live BTC server.",
+            )
 
 
     ### Raises the data event

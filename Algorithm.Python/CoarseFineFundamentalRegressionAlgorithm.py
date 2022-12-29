@@ -63,13 +63,13 @@ class CoarseFineFundamentalRegressionAlgorithm(QCAlgorithm):
         for security in self.changes.RemovedSecurities:
             if security.Invested:
                 self.Liquidate(security.Symbol)
-                self.Debug("Liquidated Stock: " + str(security.Symbol.Value))
+                self.Debug(f"Liquidated Stock: {str(security.Symbol.Value)}")
 
         # we want 50% allocation in each security in our universe
         for security in self.changes.AddedSecurities:
             if (security.Fundamentals.EarningRatios.EquityPerShareGrowth.OneYear > 0.25):
                 self.SetHoldings(security.Symbol, 0.5)
-                self.Debug("Purchased Stock: " + str(security.Symbol.Value))
+                self.Debug(f"Purchased Stock: {str(security.Symbol.Value)}")
 
         self.changes = None
 

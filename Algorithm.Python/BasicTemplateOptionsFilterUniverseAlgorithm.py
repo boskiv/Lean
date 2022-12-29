@@ -55,9 +55,10 @@ class BasicTemplateOptionsFilterUniverseAlgorithm(QCAlgorithm):
 
             # Get the first call strike under market price expiring today
             chain = kvp.Value
-            contracts = [option for option in sorted(chain, key = lambda x:x.Strike, reverse = True)
-                         if option.Expiry.date() == self.Time.date()
-                         and option.Strike < chain.Underlying.Price]
-            
-            if contracts:
+            if contracts := [
+                option
+                for option in sorted(chain, key=lambda x: x.Strike, reverse=True)
+                if option.Expiry.date() == self.Time.date()
+                and option.Strike < chain.Underlying.Price
+            ]:
                 self.MarketOrder(contracts[0].Symbol, 1)

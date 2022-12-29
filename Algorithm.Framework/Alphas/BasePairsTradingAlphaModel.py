@@ -32,8 +32,8 @@ class BasePairsTradingAlphaModel(AlphaModel):
         self.threshold = threshold
         self.predictionInterval = Time.Multiply(Extensions.ToTimeSpan(self.resolution), self.lookback)
 
-        self.pairs = dict()
-        self.Securities = list()
+        self.pairs = {}
+        self.Securities = []
 
         resolutionString = Extensions.GetEnumString(resolution, Resolution)
         self.Name = f'{self.__class__.__name__}({self.lookback},{resolutionString},{Extensions.NormalizeToStr(threshold)})'
@@ -79,7 +79,7 @@ class BasePairsTradingAlphaModel(AlphaModel):
 
         symbols = sorted([x.Symbol for x in self.Securities], key=lambda x: str(x.ID))
 
-        for i in range(0, len(symbols)):
+        for i in range(len(symbols)):
             asset_i = symbols[i]
 
             for j in range(1 + i, len(symbols)):

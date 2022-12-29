@@ -41,7 +41,7 @@ class MacdAlphaModel(AlphaModel):
 
         resolutionString = Extensions.GetEnumString(resolution, Resolution)
         movingAverageTypeString = Extensions.GetEnumString(movingAverageType, MovingAverageType)
-        self.Name = '{}({},{},{},{},{})'.format(self.__class__.__name__, fastPeriod, slowPeriod, signalPeriod, movingAverageTypeString, resolutionString)
+        self.Name = f'{self.__class__.__name__}({fastPeriod},{slowPeriod},{signalPeriod},{movingAverageTypeString},{resolutionString})'
 
 
     def Update(self, algorithm, data):

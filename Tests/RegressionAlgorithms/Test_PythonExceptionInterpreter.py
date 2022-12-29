@@ -18,7 +18,7 @@ class Test_PythonExceptionInterpreter(QCAlgorithm):
         pass
 
     def key_error(self):
-        x = dict()['SPY']
+        x = {}['SPY']
 
     def no_method_match(self):
         self.SetCash('SPY')

@@ -37,9 +37,10 @@ class CustomDataLinkedIconicTypeAddDataCoarseSelectionRegressionAlgorithm(QCAlgo
 
         self.customSymbols = []
 
-        for symbol in symbols:
-            self.customSymbols.append(self.AddData(LinkedData, symbol, Resolution.Daily).Symbol)
-
+        self.customSymbols.extend(
+            self.AddData(LinkedData, symbol, Resolution.Daily).Symbol
+            for symbol in symbols
+        )
         return symbols
 
     def OnData(self, data):

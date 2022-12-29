@@ -45,7 +45,7 @@ class NamedArgumentsRegression(QCAlgorithm):
         # Check our subscriptions for the symbol and check its resolution
         for config in self.SubscriptionManager.SubscriptionDataConfigService.GetSubscriptionDataConfigs(symbol):
             if config.Resolution != Resolution.Daily:
-                raise AssertionError(f"Resolution was not correct on security")
+                raise AssertionError("Resolution was not correct on security")
 
 
     def OnData(self, data):

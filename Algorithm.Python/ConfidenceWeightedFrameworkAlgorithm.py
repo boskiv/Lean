@@ -44,4 +44,6 @@ class ConfidenceWeightedFrameworkAlgorithm(QCAlgorithm):
         # holdings value should be 0.25 - to avoid price fluctuation issue we compare with 0.28 and 0.23
         if (self.Portfolio.TotalHoldingsValue > self.Portfolio.TotalPortfolioValue * 0.28
             or self.Portfolio.TotalHoldingsValue < self.Portfolio.TotalPortfolioValue * 0.23):
-            raise ValueError("Unexpected Total Holdings Value: " + str(self.Portfolio.TotalHoldingsValue))
+            raise ValueError(
+                f"Unexpected Total Holdings Value: {str(self.Portfolio.TotalHoldingsValue)}"
+            )

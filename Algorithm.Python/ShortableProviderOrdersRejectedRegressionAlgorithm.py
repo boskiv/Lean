@@ -85,7 +85,7 @@ class ShortableProviderOrdersRejectedRegressionAlgorithm(QCAlgorithm):
 
             self.HandleOrder(self.MarketOrder(self.aig, -1001))
             if len(self.ordersAllowed) != 1:
-                raise Exception(f"Expected market order of -1001 BAC to not fail")
+                raise Exception("Expected market order of -1001 BAC to not fail")
 
             self.invalidatedNewOrderWithPortfolioHoldings = True
 

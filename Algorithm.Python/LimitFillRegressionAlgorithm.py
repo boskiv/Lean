@@ -34,10 +34,9 @@ class LimitFillRegressionAlgorithm(QCAlgorithm):
 
     def OnData(self, data):
         '''OnData event is the primary entry point for your algorithm. Each new data point will be pumped in here.'''
-        if data.ContainsKey("SPY"):
-            if self.IsRoundHour(self.Time):
-                negative = 1 if self.Time < (self.StartDate + timedelta(days=2)) else -1
-                self.LimitOrder("SPY", negative*10, data["SPY"].Price)
+        if data.ContainsKey("SPY") and self.IsRoundHour(self.Time):
+            negative = 1 if self.Time < (self.StartDate + timedelta(days=2)) else -1
+            self.LimitOrder("SPY", negative*10, data["SPY"].Price)
 
     def IsRoundHour(self, dateTime):
         '''Verify whether datetime is round hour'''

@@ -48,7 +48,7 @@ class ScheduledUniverseSelectionModelRegressionAlgorithm(QCAlgorithm):
         symbols = []
         weekday = dateTime.weekday()
 
-        if weekday == 0 or weekday == 1:
+        if weekday in [0, 1]:
             symbols.append(Symbol.Create('SPY', SecurityType.Equity, Market.USA))
         elif weekday == 2:
             # given the date/time rules specified in Initialize, this symbol will never be selected (not invoked on wednesdays)
@@ -56,7 +56,7 @@ class ScheduledUniverseSelectionModelRegressionAlgorithm(QCAlgorithm):
         else:
             symbols.append(Symbol.Create('IBM', SecurityType.Equity, Market.USA))
 
-        if weekday == 1 or weekday == 3:
+        if weekday in [1, 3]:
             symbols.append(Symbol.Create('EURUSD', SecurityType.Forex, Market.Oanda))
         elif weekday == 4:
             # given the date/time rules specified in Initialize, this symbol will never be selected (every 6 hours never lands on hour==1)
@@ -67,7 +67,7 @@ class ScheduledUniverseSelectionModelRegressionAlgorithm(QCAlgorithm):
         return symbols
 
     def OnSecuritiesChanged(self, changes):
-        self.Log("{}: {}".format(self.Time, changes))
+        self.Log(f"{self.Time}: {changes}")
 
         weekday = self.Time.weekday()
 
@@ -83,11 +83,8 @@ class ScheduledUniverseSelectionModelRegressionAlgorithm(QCAlgorithm):
             self.ExpectAdditions(changes, 'EURUSD')
             if weekday not in self.seenDays:
                 self.seenDays.append(weekday)
-                self.ExpectRemovals(changes, 'NZDUSD')
-            else:
-                self.ExpectRemovals(changes, 'NZDUSD')
-
-        if weekday == 2 or weekday == 4:
+            self.ExpectRemovals(changes, 'NZDUSD')
+        if weekday in [2, 4]:
             # selection function not invoked on wednesdays (2) or friday (4)
             self.ExpectAdditions(changes, None)
             self.ExpectRemovals(changes, None)
@@ -98,20 +95,24 @@ class ScheduledUniverseSelectionModelRegressionAlgorithm(QCAlgorithm):
 
 
     def OnOrderEvent(self, orderEvent):
-        self.Log("{}: {}".format(self.Time, orderEvent))
+        self.Log(f"{self.Time}: {orderEvent}")
 
     def ExpectAdditions(self, changes, *tickers):
         if tickers is None and changes.AddedSecurities.Count > 0:
-            raise Exception("{}: Expected no additions: {}".format(self.Time, self.Time.weekday()))
+            raise Exception(f"{self.Time}: Expected no additions: {self.Time.weekday()}")
 
         for ticker in tickers:
             if ticker is not None and ticker not in [s.Symbol.Value for s in changes.AddedSecurities]:
-                raise Exception("{}: Expected {} to be added: {}".format(self.Time, ticker, self.Time.weekday()))
+                raise Exception(
+                    f"{self.Time}: Expected {ticker} to be added: {self.Time.weekday()}"
+                )
 
     def ExpectRemovals(self, changes, *tickers):
         if tickers is None and changes.RemovedSecurities.Count > 0:
-            raise Exception("{}: Expected no removals: {}".format(self.Time, self.Time.weekday()))
+            raise Exception(f"{self.Time}: Expected no removals: {self.Time.weekday()}")
 
         for ticker in tickers:
             if ticker is not None and ticker not in [s.Symbol.Value for s in changes.RemovedSecurities]:
-                raise Exception("{}: Expected {} to be removed: {}".format(self.Time, ticker, self.Time.weekday()))
+                raise Exception(
+                    f"{self.Time}: Expected {ticker} to be removed: {self.Time.weekday()}"
+                )

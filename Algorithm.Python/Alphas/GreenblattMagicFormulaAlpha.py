@@ -66,11 +66,17 @@ class RateOfChangeAlphaModel(AlphaModel):
         self.symbolDataBySymbol = {}
 
     def Update(self, algorithm, data):
-        insights = []
-        for symbol, symbolData in self.symbolDataBySymbol.items():
-            if symbolData.CanEmit:
-                insights.append(Insight.Price(symbol, self.predictionInterval, InsightDirection.Up, symbolData.Return, None))
-        return insights
+        return [
+            Insight.Price(
+                symbol,
+                self.predictionInterval,
+                InsightDirection.Up,
+                symbolData.Return,
+                None,
+            )
+            for symbol, symbolData in self.symbolDataBySymbol.items()
+            if symbolData.CanEmit
+        ]
 
     def OnSecuritiesChanged(self, algorithm, changes):
 
@@ -178,14 +184,21 @@ class GreenBlattMagicFormulaUniverseSelectionModel(FundamentalUniverseSelectionM
         ## The stock must be traded on either the NYSE or NASDAQ
         ## At least half a year since its initial public offering
         ## The stock's market cap must be greater than 500 million
-        filteredFine = [x for x in fine if x.CompanyReference.CountryId == "USA"
-                                        and (x.CompanyReference.PrimaryExchangeID == "NYS" or x.CompanyReference.PrimaryExchangeID == "NAS")
-                                        and (algorithm.Time - x.SecurityReference.IPODate).days > 180
-                                        and x.EarningReports.BasicAverageShares.ThreeMonths * x.EarningReports.BasicEPS.TwelveMonths * x.ValuationRatios.PERatio > 5e8]
+        filteredFine = [
+            x
+            for x in fine
+            if x.CompanyReference.CountryId == "USA"
+            and x.CompanyReference.PrimaryExchangeID in ["NYS", "NAS"]
+            and (algorithm.Time - x.SecurityReference.IPODate).days > 180
+            and x.EarningReports.BasicAverageShares.ThreeMonths
+            * x.EarningReports.BasicEPS.TwelveMonths
+            * x.ValuationRatios.PERatio
+            > 5e8
+        ]
         count = len(filteredFine)
         if count == 0: return []
 
-        myDict = dict()
+        myDict = {}
         percent = self.NumberOfSymbolsFine / count
 
         # select stocks with top dollar volume in every single sector

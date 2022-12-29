@@ -50,4 +50,4 @@ class BasicTemplateCfdAlgorithm(QCAlgorithm):
             self.SetHoldings(self.symbol, 1)
 
     def OnOrderEvent(self, orderEvent):
-        self.Debug("{} {}".format(self.Time, orderEvent.ToString()))
+        self.Debug(f"{self.Time} {orderEvent.ToString()}")

@@ -56,12 +56,12 @@ class DynamicSecurityDataRegressionAlgorithm(QCAlgorithm):
         # 1. Get the most recent data point of a particular type:
         # 1.a Using the generic method, Get(T): => T
         customLinkedData = self.Equity.Data.Get(LinkedData)
-        self.Log("{}: LinkedData: {}".format(self.Time, str(customLinkedData)))
+        self.Log(f"{self.Time}: LinkedData: {str(customLinkedData)}")
 
         # 2. Get the list of data points of a particular type for the most recent time step:
         # 2.a Using the generic method, GetAll(T): => IReadOnlyList<T>
         customLinkedDataList = self.Equity.Data.GetAll(LinkedData)
-        self.Log("{}: LinkedData: {}".format(self.Time, len(customLinkedDataList)))
+        self.Log(f"{self.Time}: LinkedData: {len(customLinkedDataList)}")
 
         if not self.Portfolio.Invested:
             self.Buy(self.Equity.Symbol, 10)

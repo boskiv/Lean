@@ -32,7 +32,7 @@ class SectorWeightingPortfolioConstructionModel(EqualWeightingPortfolioConstruct
                               The function returns null if unknown, in which case the function will be called again in the
                               next loop. Returning current time will trigger rebalance.'''
         super().__init__(rebalance)
-        self.sectorCodeBySymbol = dict()
+        self.sectorCodeBySymbol = {}
 
     def ShouldCreateTargetForInsight(self, insight):
         '''Method that will determine if the portfolio construction model should create a
@@ -45,9 +45,9 @@ class SectorWeightingPortfolioConstructionModel(EqualWeightingPortfolioConstruct
         '''Will determine the target percent for each insight
         Args:
             activeInsights: The active insights to generate a target for'''
-        result = dict()
+        result = {}
 
-        insightBySectorCode = dict()
+        insightBySectorCode = {}
 
         for insight in activeInsights:
             if insight.Direction == InsightDirection.Flat:
@@ -55,15 +55,15 @@ class SectorWeightingPortfolioConstructionModel(EqualWeightingPortfolioConstruct
                 continue
 
             sectorCode = self.sectorCodeBySymbol.get(insight.Symbol)
-            insights = insightBySectorCode.pop(sectorCode, list())
+            insights = insightBySectorCode.pop(sectorCode, [])
 
             insights.append(insight)
             insightBySectorCode[sectorCode] = insights
 
         # give equal weighting to each sector
-        sectorPercent = 0 if len(insightBySectorCode) == 0 else 1.0 / len(insightBySectorCode)
+        sectorPercent = 1.0 / len(insightBySectorCode) if insightBySectorCode else 0
 
-        for _, insights in insightBySectorCode.items():
+        for insights in insightBySectorCode.values():
             # give equal weighting to each security
             count = len(insights)
             percent = 0 if count == 0 else sectorPercent / count
@@ -83,8 +83,7 @@ class SectorWeightingPortfolioConstructionModel(EqualWeightingPortfolioConstruct
             self.sectorCodeBySymbol.pop(security.Symbol, None)
 
         for security in changes.AddedSecurities:
-            sectorCode = self.GetSectorCode(security)
-            if sectorCode:
+            if sectorCode := self.GetSectorCode(security):
                 self.sectorCodeBySymbol[security.Symbol] = sectorCode
 
         super().OnSecuritiesChanged(algorithm, changes)

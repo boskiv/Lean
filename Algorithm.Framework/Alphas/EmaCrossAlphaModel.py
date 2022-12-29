@@ -31,7 +31,7 @@ class EmaCrossAlphaModel(AlphaModel):
         self.symbolDataBySymbol = {}
 
         resolutionString = Extensions.GetEnumString(resolution, Resolution)
-        self.Name = '{}({},{},{})'.format(self.__class__.__name__, fastPeriod, slowPeriod, resolutionString)
+        self.Name = f'{self.__class__.__name__}({fastPeriod},{slowPeriod},{resolutionString})'
 
 
     def Update(self, algorithm, data):

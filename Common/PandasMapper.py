@@ -42,10 +42,8 @@ def mapper(key):
     if keyType is list:
         return [mapper(x) for x in key]
     if keyType is tuple:
-        return tuple([mapper(x) for x in key])
-    if keyType is dict:
-        return { k: mapper(v) for k, v in key.items()}
-    return key
+        return tuple(mapper(x) for x in key)
+    return { k: mapper(v) for k, v in key.items()} if keyType is dict else key
 
 def wrap_keyerror_function(f):
     '''Wraps function f with wrapped_function, used for functions that throw KeyError when not found.
@@ -60,7 +58,7 @@ def wrap_keyerror_function(f):
 
             if len(args) > 1:
                 newargs = mapper(args)
-            if len(kwargs) > 0:
+            if kwargs:
                 newkwargs = mapper(kwargs)
 
             return f(*newargs, **newkwargs)
@@ -96,7 +94,7 @@ def wrap_bool_function(f):
 
         if len(args) > 1:
             newargs = mapper(args)
-        if len(kwargs) > 0:
+        if kwargs:
             newkwargs = mapper(kwargs)
 
         return f(*newargs, **newkwargs)

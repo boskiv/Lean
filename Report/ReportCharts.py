@@ -42,9 +42,9 @@ lu = matplotlib.font_manager.FontProperties(family = "Open Sans Condensed")
 class ReportCharts:
 
     def fig_to_base64(self, filename = '', fig = None, dpi = 200):
-        base64 = 'data:image/png;base64,'
         if fig is not None:
             fig.savefig(filename, dpi=dpi, bbox_inches='tight')
+            base64 = 'data:image/png;base64,'
             with open(filename, "rb") as fp:
                 base64 += b64encode(fp.read()).decode('utf-8').replace('\n', '')
             return base64
@@ -309,8 +309,14 @@ class ReportCharts:
         # Need to handle this since we don't use a legend if it is only backtesting
         if len(live_returns[0]) > 0:
             rectangles = [plt.Rectangle((0, 0), 1, 1, fc=backtest_color), plt.Rectangle((0, 0), 1, 1, fc=live_color)]
-            ax.legend(rectangles, [label for label in ['Backtest', "Live"]], handlelength=0.8, handleheight=0.8,
-                      frameon=False, fontsize=8)
+            ax.legend(
+                rectangles,
+                ['Backtest', "Live"],
+                handlelength=0.8,
+                handleheight=0.8,
+                frameon=False,
+                fontsize=8,
+            )
 
         fig = ax.get_figure()
         ax.xaxis_date()
@@ -397,7 +403,7 @@ class ReportCharts:
             ax[0].xaxis.set_major_locator(ticker.MaxNLocator(min(12, len(returns.columns))))
             ax[0].yaxis.set_major_locator(ticker.MaxNLocator(len(returns.index.values)))
             ax[0].set_yticklabels([''] + list(returns.index.values))
-            ax[0].set_xticklabels([''] + [x for x in returns.columns])
+            ax[0].set_xticklabels([''] + list(returns.columns))
             ax[0].tick_params(labelsize=8, bottom=True, labelbottom=True, top=False, labeltop=False)
             ax[0].set_ylabel('Backtest', rotation='vertical', fontweight='black')
             for (j, i), label in np.ndenumerate(returns):
@@ -408,7 +414,7 @@ class ReportCharts:
 
             ax[1].xaxis.set_major_locator(ticker.MaxNLocator(min(12, len(live_returns.columns))))
             ax[1].yaxis.set_major_locator(ticker.MaxNLocator(len(live_returns.index.values)))
-            ax[1].set_xticklabels([''] + [x for x in live_returns.columns])  ## will need to be fixed for more than 1 year
+            ax[1].set_xticklabels([''] + list(live_returns.columns))
             ax[1].set_yticklabels([''] + list(live_returns.index.values))
             ax[1].tick_params(labelsize=8, bottom=True, labelbottom=True, top=False, labeltop=False)
             ax[1].set_ylabel('Live', rotation='vertical', fontweight='black')
@@ -880,9 +886,13 @@ class ReportCharts:
             plt.axis('equal')
             fig.set_size_inches(width, height)
             if i == 0:
-                pies["Backtest Asset Allocation"] = self.fig_to_base64(f"asset-allocation-backtest.png", fig)
+                pies["Backtest Asset Allocation"] = self.fig_to_base64(
+                    "asset-allocation-backtest.png", fig
+                )
             else:
-                pies["Live Asset Allocation"] = self.fig_to_base64(f"asset-allocation-live.png", fig)
+                pies["Live Asset Allocation"] = self.fig_to_base64(
+                    "asset-allocation-live.png", fig
+                )
             plt.cla()
             plt.clf()
             plt.close('all')
@@ -937,8 +947,14 @@ class ReportCharts:
         ax.fill_between(live_data[0], 0, live_data[1], color=live_color, alpha=0.75, step = 'post')
 
         rectangles = [plt.Rectangle((0, 0), 1, 1, fc=backtest_color), plt.Rectangle((0, 0), 1, 1, fc=live_color)]
-        ax.legend(rectangles, [label for label in labels], handlelength=0.8, handleheight=0.8,
-                  frameon=False, fontsize=8)
+        ax.legend(
+            rectangles,
+            list(labels),
+            handlelength=0.8,
+            handleheight=0.8,
+            frameon=False,
+            fontsize=8,
+        )
         ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha='center')
         ax.tick_params(axis='both', labelsize=8, labelrotation=0)
         ax.xaxis.set_major_formatter(DateFormatter("%b %Y"))

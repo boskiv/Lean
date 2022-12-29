@@ -78,7 +78,7 @@ class MinimumVariancePortfolioOptimizer:
 
     def get_boundary_conditions(self, size):
         '''Creates the boundary condition for the portfolio weights'''
-        return tuple((self.minimum_weight, self.maximum_weight) for x in range(size))
+        return tuple((self.minimum_weight, self.maximum_weight) for _ in range(size))
 
     def get_budget_constraint(self, weights):
         '''Defines a budget constraint: the sum of the weights equals unity'''
